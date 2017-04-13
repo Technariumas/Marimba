@@ -1,9 +1,9 @@
 import sqlite3
 import pandas as pd
-
+import os
 
 conn = sqlite3.connect('temp.db') # create a temp db file
-data = pd.read_csv('data.csv')
+data = pd.read_csv('data_full.csv')
 sql = data.to_sql('data_data', conn, if_exists='append', index=False) # convert csv to sql
 
 statement = """select time_start, cell_grp AS 'Region',
@@ -22,3 +22,5 @@ statement = """select time_start, cell_grp AS 'Region',
 
 sql = pd.read_sql(statement, conn) # aggregate the data
 sql.to_csv('aggregated_data_snippet.csv') # write to file 
+conn.close()
+os.remove('temp.db')
