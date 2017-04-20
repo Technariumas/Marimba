@@ -1,6 +1,6 @@
 import pygame
 import os
-
+import asyncio
 
 def init():
 	global midi_filenames
@@ -36,11 +36,22 @@ def init():
 	# map note codes to sound objects
 	midi_filenames = {key: pygame.mixer.Sound(os.path.join(files_dir, midi_filenames[key])) for key in midi_filenames}
 
-
-
-def play_sound(note, volume):
-	print(note)
+async def play_note(start_time, delay, note, velocity,  lenght=1000,):
+	'''start_time in beats'''
+	await asyncio.sleep(start_time*delay) # wait for the time to start
 	sound = midi_filenames[note]
-	sound.set_volume(1/127*volume)
+	sound.set_volume(1/127*velocity)
 	sound.play()
-	sound.fadeout(1000)
+	await asyncio.sleep(lenght/1000) # wait for the lenght of note before fadeout
+	sound.fadeout(1) 
+
+def play_all(sequence, bpm = 120):
+
+	delay = 60/bpm # this is time between beats in seconds 
+	ioloop = asyncio.get_event_loop()
+	tasks = []
+	for index, notes in enumerate(sequence): # start time is determined by index, every row is for one beat
+		if notes: 
+			for note in notes:
+				tasks.append(ioloop.create_task(play_note(index, delay, *note)))
+	ioloop.run_until_complete(asyncio.wait(tasks))
