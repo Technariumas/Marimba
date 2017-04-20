@@ -1,8 +1,12 @@
 import random
-import time
 from player import Player
 
-Player.init()
-Player.play_all([[(36,70,1000),(72,70,10000)],[(36,70,10000),(72,70,1000)],[(36,70,1000),(72,70,1000)],
-	  [(60,70,1000),(77,70,100)],[(60,70,1000)],[],[],[],[(62,70,100),(67,70,100)],
-	  [(79,70,100),(77,70,1000)]])
+
+
+sequences = [[(36,70,15),(72,70,0.5)],[(36,70,1),(72,70,1)],
+		[(36,70,1),(72,70,2)],[(60,70,1),(77,70,1)],[(60,70,1)],
+		[],[],[],[(62,70,1),(67,70,1)],[(79,70,1),(77,70,1)]]
+
+Player.init() # call player init before playing anything
+Player.play_all(sequences) 
+Player.to_midi(sequences, 120, 'test.mid') # use to_midi to write sequence to a midi file
