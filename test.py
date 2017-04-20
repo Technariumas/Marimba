@@ -2,10 +2,7 @@ import random
 import time
 from player import Player
 
-
-for i in range(12):
-	note=random.choice(list(Player.midi_filenames.keys()))
-	volume = random.randint(50,127)
-	print(note)
-	Player.play_sound(note, volume)
-	time.sleep(0.2)
+Player.init()
+Player.play_all([[(36,70,1000),(72,70,10000)],[(36,70,10000),(72,70,1000)],[(36,70,1000),(72,70,1000)],
+	  [(60,70,1000),(77,70,100)],[(60,70,1000)],[],[],[],[(62,70,100),(67,70,100)],
+	  [(79,70,100),(77,70,1000)]])
