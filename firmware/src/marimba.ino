@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Bounce2.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <MIDI.h>
 
 #define BUTTON1 13
 #define BUTTON2 11
@@ -9,6 +10,14 @@
 #define SOLENOID2 10
 #define POT1 A0
 #define POT2 A1
+
+struct MarimbaMIDISettings : public midi::DefaultSettings {
+	static const unsigned SysExMaxSize = 1; // Accept SysEx messages up to 1 bytes long.
+};
+
+MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, MarimbaMIDISettings);
+
+// MIDI_CREATE_DEFAULT_INSTANCE();
 
 Bounce button1 = Bounce();
 Bounce button2 = Bounce();
@@ -41,6 +50,16 @@ inline static ledDriverSetup() {
   TWBR = 12; // upgrade to 400KHz!
 
   leds.setPWM(8, 0, 0);
+}
+
+void midiSetup() {
+	MIDI.useExternalPowerPin();
+    MIDI.setHandleNoteOn(handleNoteOn);  // Put only the name of the function
+    MIDI.setHandleNoteOff(handleNoteOff);
+    MIDI.setHandleControlChange(handleControlChange);
+    MIDI.setHandleSystemReset(handleSystemReset);
+    // Initiate MIDI communications, listen to all channels
+    MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
 uint16_t getDipSwitch() {
@@ -79,4 +98,18 @@ void setup(){
 void loop() {
 	button1.update();
 	button2.update();
+	MIDI.read();
+}
+
+
+void handleNoteOn(byte channel, byte pitch, byte velocity) {
+}
+
+void handleNoteOff(byte channel, byte pitch, byte velocity) {
+}
+
+void handleControlChange(byte channel, byte pitch, byte velocity) {
+}
+
+void handleSystemReset() {
 }
