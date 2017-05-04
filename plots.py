@@ -1,65 +1,46 @@
 # -*- coding: utf-8 -*-
+from utils import *
 
-import numpy as np
-import matplotlib.pyplot as plt
-import db
-import matplotlib.dates as mdates
-from datetime import datetime, timedelta
-#import statsmodels.api as sm
+#print get_list_of_districts()
 
 
-from pony.orm import *
-db = Database()
-db.bind('mysql', host='', user='opit', passwd='332', db='marimba')
-db.generate_mapping(create_tables=True)
+session_start = get_time_start()
+session_end = get_time_end()
+session_duration = get_session_duration()
 
-def window(size):
-    return np.ones(size)/float(size)
-    
+plt.figure()
+ax = plt.subplot()
+plt.hist(session_duration, facecolor="Salmon", bins=20)
+#plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+#plt.xlabel("%H:%M")
+plt.ylabel("Sesiju sk.")
+plt.savefig("img/session_duration_hist", bbox_inches="tight")
 
-time_slice_start = '2017-03-02 16:00:00'
-time_slice_end = '2017-03-02 16:00:30'
+exit()
 
-
-@db_session
-def get_list_of_districts():
-	return db.select("select distinct raj from data where time_start > $time_slice_start and time_start < $time_slice_end")
-
-@db_session
-def get_districts():
-	return db.select("select raj from data where time_start > $time_slice_start and time_start < $time_slice_end")
-
-
-@db_session
-def get_mb():
-	return db.select("select mb from data where time_start > $time_slice_start and time_start < $time_slice_end")
-
-@db_session
-def get_time_start():
-	return db.select("select time_start from data where time_start > $time_slice_start and time_start < $time_slice_end")
-
-
-@db_session
-def get_time_end():
-	return db.select("select time_finish from data")
-
-@db_session
-def get_mb_in_region(region):
-	return db.select("select mb from data where time_start > $time_slice_start and time_start < $time_slice_end and cell_grp = $region")
-
-@db_session
-def get_time_start_in_region(region):
-	return db.select("select time_start from data where time_start > $time_slice_start and time_start < $time_slice_end and cell_grp = $region")
+plt.figure()
+for region in [1, 2, 3, 4]:
+	mb = get_mb_in_region(region)
+	session_start = get_time_start_in_region(region)
+	ax = plt.subplot(2, 2, region)
+	avg = rolling_sum(mb, 60)
+	print np.min(avg), np.max(avg)
+	ax.plot_date(session_start, mb, c='k', markersize=1)
+	ax.plot(session_start, avg, c='r', linestyle='-', markersize=1)
+	#plt.date_plot(districts, mb)
+	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%S'))
+	ax.set_yscale('log')
+plt.ylabel("MB, vidurkis")
+plt.savefig("img/session_rolling_sum_in_regions", bbox_inches="tight")
 
 
 plt.figure()
-
-
 for region in [1, 2, 3, 4]:
 	mb = get_mb_in_region(region)
 	session_start = get_time_start_in_region(region)
 	ax = plt.subplot(2, 2, region)
 	avg = np.convolve(mb,window(100), 'same')
+	print np.min(avg), np.max(avg)
 	ax.plot_date(session_start, mb, c='k', markersize=1)
 	ax.plot(session_start, avg, c='r', linestyle='-', markersize=1)
 	#plt.date_plot(districts, mb)
@@ -67,8 +48,6 @@ for region in [1, 2, 3, 4]:
 	ax.set_yscale('log')
 plt.ylabel("MB, vidurkis")
 plt.savefig("img/session_avg_30sec_in_regions", bbox_inches="tight")
-
-
 
 
 #@db_session
@@ -82,7 +61,7 @@ districts = get_districts()
 
 #apie 4% mb = 0 
 
-exit()
+
     
 avg = np.convolve(mb,window(100), 'same')
     
