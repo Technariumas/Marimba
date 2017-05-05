@@ -82,7 +82,6 @@ uint8_t TWI_Initialized();
 
 /* Private defines -----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint8_t _twiInitStatus;
 /* Private functions ---------------------------------------------------------*/
 /* Functions -----------------------------------------------------------------*/
 /**
@@ -128,7 +127,6 @@ void TWI_Init(TWI_Init_TypeDef *TWI_InitStruct)
     
     // Enable TWI
     TWCR = _BV(TWEN);
-    _twiInitStatus = 1;
 }
 
 /**
@@ -138,14 +136,11 @@ void TWI_Init(TWI_Init_TypeDef *TWI_InitStruct)
  */
 void TWI_InitStandard()
 {
-    if (!TWI_Initialized())
-    {
-        TWI_Init_TypeDef twiInit;
-        twiInit.TWI_Frequency = 400000;
-        twiInit.TWI_Mode = TWI_MODE_MASTER;
-        twiInit.TWI_Prescaler = TWI_PRESCALER_1;
-        TWI_Init(&twiInit);
-    }
+    TWI_Init_TypeDef twiInit;
+    twiInit.TWI_Frequency = 400000;
+    twiInit.TWI_Mode = TWI_MODE_MASTER;
+    twiInit.TWI_Prescaler = TWI_PRESCALER_1;
+    TWI_Init(&twiInit);
 }
 
 /**
@@ -298,17 +293,6 @@ uint8_t TWI_SlaveAtAddress(const uint8_t Address)
     TWI_EndTransmission();
     
     return slaveAvailable;
-}
-
-/**
- * @brief   Checks to see if TWI has been initialized
- * @param   None
- * @retval  1 if initialized
- * @retval  0 if uninitialized
- */
-uint8_t TWI_Initialized()
-{
-    return _twiInitStatus;
 }
 
 #endif /* TWI_H_ */

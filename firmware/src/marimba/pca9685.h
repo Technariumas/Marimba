@@ -142,12 +142,8 @@ void PCA9685_SetOutput(uint8_t Address, uint8_t Output, uint16_t OffValue);
  * @retval	1: A PCA9685 at address [Address] has been initialized
  * @retval	0: Initialization failed
  */
-uint8_t PCA9685_Init(PCA9685_Init_TypeDef *PCA9685_InitStruct)
-{
-	if (!TWI_Initialized())
-		TWI_InitStandard();
-	
-	uint8_t twiStatus = 0;
+void PCA9685_Init() {
+	TWI_InitStandard();
 	
 	// if (TWI_SlaveAtAddress(PCA9685_InitStruct->Address))
 	// {
@@ -165,13 +161,13 @@ uint8_t PCA9685_Init(PCA9685_Init_TypeDef *PCA9685_InitStruct)
 		// TWI_Write(0x10);
 		// TWI_EndTransmission();
 
-		TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		TWI_BeginTransmission(0x40);
 		TWI_Write(PRE_SCALE);
 		TWI_Write(3);//
 		TWI_EndTransmission();
 
 		delayMicroseconds(600);
-		TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		TWI_BeginTransmission(0x40);
 		TWI_Write(MODE1);
 		TWI_Write((1 << MODE1_AI));//0xA1
 		TWI_EndTransmission();
@@ -206,8 +202,6 @@ uint8_t PCA9685_Init(PCA9685_Init_TypeDef *PCA9685_InitStruct)
 		// twiStatus = TWI_RequestFrom(PCA9685_InitStruct->Address, data, 4);
 		// volatile uint8_t test = 0;
  	// }
-	// TWBR = 12; // upgrade to 400KHz!
-	return twiStatus;
 }
 
 /**
