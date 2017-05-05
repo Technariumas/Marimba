@@ -144,29 +144,36 @@ void PCA9685_SetOutput(uint8_t Address, uint8_t Output, uint16_t OffValue);
  */
 uint8_t PCA9685_Init(PCA9685_Init_TypeDef *PCA9685_InitStruct)
 {
-	// Check parameters
-	// assert_param(IS_PCA9685_INV_OUTPUTS(PCA9685_InitStruct->InvOutputs));
- //    assert_param(IS_PCA9685_OUTPUT_DRIVER(PCA9685_InitStruct->OutputDriver));
- //    assert_param(IS_PCA9685_OUTPUT_NOT_EN(PCA9685_InitStruct->OutputNotEn));
-	// assert_param(IS_PCA9685_FREQUENCY(PCA9685_InitStruct->PWMFrequency));
-
 	if (!TWI_Initialized())
 		TWI_InitStandard();
 	
 	uint8_t twiStatus = 0;
 	
-	if (TWI_SlaveAtAddress(PCA9685_InitStruct->Address))
-	{
-		/* MODE1 Register:
-		 * Internal clock
-		 * Register Auto-Increment enabled
-		 * Normal mode
-		 * Does not respond to subaddresses
-		 * Responds to All Call I2C-bus address
-		 */
+	// if (TWI_SlaveAtAddress(PCA9685_InitStruct->Address))
+	// {
+
+		// TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		// TWI_Write(MODE1);
+		// TWI_Write(0);
+		// TWI_EndTransmission();
+
+		// uint8_t mode1 = 0;
+		// TWI_RequestFrom(PCA9685_InitStruct->Address, &mode1, 1);
+		
+		// TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		// TWI_Write(MODE1);
+		// TWI_Write(0x10);
+		// TWI_EndTransmission();
+
+		TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		TWI_Write(PRE_SCALE);
+		TWI_Write(3);//
+		TWI_EndTransmission();
+
+		delayMicroseconds(600);
 		TWI_BeginTransmission(PCA9685_InitStruct->Address);
 		TWI_Write(MODE1);
-		TWI_Write((1 << MODE1_AI) | (1 << MODE1_ALLCALL));
+		TWI_Write((1 << MODE1_AI));//0xA1
 		TWI_EndTransmission();
 		
 		/* MODE2 Register:
@@ -179,15 +186,6 @@ uint8_t PCA9685_Init(PCA9685_Init_TypeDef *PCA9685_InitStruct)
 		// TWI_Write(MODE2);
 		// TWI_Write(mode2);
 		// TWI_EndTransmission();
-		
-		/* PRE_SCALE Register:
-		 * Set to value specified in PCA9685_InitStruct->PWMFrequency;
-		 */
-		TWI_BeginTransmission(PCA9685_InitStruct->Address);
-		TWI_Write(PRE_SCALE);
-		TWI_Write(PCA9685_InitStruct->PWMFrequency);
-		TWI_EndTransmission();
-		
 		
 		
 		// // TESTING - 50% Duty. On at 0 and off at 2047 (0x7FF)
@@ -207,7 +205,8 @@ uint8_t PCA9685_Init(PCA9685_Init_TypeDef *PCA9685_InitStruct)
 		// volatile uint8_t data[4] = {};
 		// twiStatus = TWI_RequestFrom(PCA9685_InitStruct->Address, data, 4);
 		// volatile uint8_t test = 0;
- 	}	
+ 	// }
+	// TWBR = 12; // upgrade to 400KHz!
 	return twiStatus;
 }
 

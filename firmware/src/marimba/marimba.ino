@@ -118,9 +118,9 @@ static inline uint16_t getDipSwitch() {
 }
 
 void setup(){
+	ledDriverSetup();
 	buttonsSetup();
 	outputsSetup();
-	ledDriverSetup();
 	midiSetup();
 }
 
