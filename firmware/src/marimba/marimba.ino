@@ -4,6 +4,7 @@
 #include "pca9685.h"
 #include <MIDI.h>
 #include "myserial.h"
+#include "lights.h"
 
 #define BUTTON1 13
 #define BUTTON2 11
@@ -31,8 +32,8 @@ Bounce button1 = Bounce();
 Bounce button2 = Bounce();
 
 inline static void buttonsSetup() {
-	pinMode(BUTTON1, INPUT);
-	pinMode(BUTTON2, INPUT);
+	// pinMode(BUTTON1, INPUT);
+	// pinMode(BUTTON2, INPUT);
 
 	button1.attach(BUTTON1);
 	button1.interval(100);
@@ -42,17 +43,10 @@ inline static void buttonsSetup() {
 }
 
 inline static void outputsSetup() {
-	pinMode(SOLENOID1, OUTPUT);
-	pinMode(SOLENOID2, OUTPUT);
+	DDRD |= _BV(PD5) | _BV(PD6);	
+	// pinMode(SOLENOID1, OUTPUT);
+	// pinMode(SOLENOID2, OUTPUT);
 }
-
-PCA9685_Init_TypeDef PCA9685_Params = {
-	.Address = 0x40,
-	.InvOutputs = PCA9685_NotInvOutputs,
-	.OutputDriver = PCA9685_OutputDriver_TotemPole,
-	.OutputNotEn = PCA9685_OutputNotEn_OUTDRV,
-	.PWMFrequency = PCA9685_Frequency_200Hz
-};
 
 void ledsOff() {
 	for(uint8_t i = 10; i < 16; i++) {
@@ -73,7 +67,7 @@ void setLed1() {
 }
 
 inline static ledDriverSetup() {
-	PCA9685_Init(&PCA9685_Params);
+	PCA9685_Init();
 	ledsOff();
 	delay(300);
 	setLed1();
@@ -86,7 +80,6 @@ inline static ledDriverSetup() {
 static inline void midiSetup() {
     MIDI.setHandleNoteOn(handleNoteOn);  // Put only the name of the function
     MIDI.setHandleNoteOff(handleNoteOff);
-    MIDI.setHandleControlChange(handleControlChange);
     MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
@@ -125,88 +118,13 @@ void setup(){
 	TCCR1B = TCCR1B & 0b11111000 | 1;
 }
 
-uint16_t lights[] = {4095, 4095, 4095, 4095, 500, 500, 500, 500};
-uint8_t tail = 0, head = 4;
-
-void outputLights() {
-  for(uint8_t i = 0; i < 8; i++) {
-  	PCA9685_SetOutput(0x40, i, ((uint32_t)lights[i] * (uint32_t)lights[i])/4095);
-  }
-}
-
-uint8_t step = 12;
-uint16_t minimum = 500;
-uint16_t maximum = 4095;
-
-static inline void setLedCount(uint8_t count) {
-  uint8_t i;
-
-  if(count > 7) {
-    count = 7;
-  }
-  if(count < 1) {
-    count = 1;
-  }
-  int8_t prevCount = head - tail;
-  uint8_t newHead = (tail + count) % 8;
-
-  if(prevCount < 0) {
-    prevCount += 8;
-  }
-
-  if(count > prevCount) {
-    lights[newHead] = lights[head];
-    for(i = 0; i < (count - prevCount); i++){
-      lights[(head + i)%8] = maximum;
-    }
-  } else if(count < prevCount) {
-    lights[newHead] = lights[head];
-    for(i = 0; i < prevCount - count; i++) {
-      lights[(newHead + 1 + i) % 8] = minimum;
-    }
-  }
-
-  head = newHead;
-}
-
-  void initLights() {
-  for(int i = 0; i < 8; i++) {
-    if(head > tail){
-      if(i < tail) {
-        lights[i] = minimum;
-      } else if(i >= tail && i < head) {
-        lights[i] = maximum;
-      } else if(i >= head) {
-        lights[i] = minimum;
-      }
-    } else {
-      if(i < tail && i >= head) {
-        lights[i] = minimum;
-      } else if(i >= tail) {
-        lights[i] = maximum;
-      } else if(i < head) {
-        lights[i] = maximum;
-      }
-    }
-    
-  }
-}
-
-void chase() {
-	if(lights[head] + step <= maximum) {
-		lights[head] += step;
-		
-		if(lights[tail] - step > minimum) {
-			lights[tail] -= step;
-		}
-		outputLights();
-	} else {
-		head = (head + 1) % 8;
-		tail = (tail + 1) % 8;
-	}
-}
 
 uint8_t myNote = 0;
+
+uint32_t strokeEnd = 0;
+uint8_t strokeHighLength = 19;
+uint8_t strokeMidLength = 60;
+uint8_t strokeInProgress = 0;
 
 void loop() {
 	myNote = getDipSwitch();
@@ -220,20 +138,28 @@ void loop() {
 	if(button2.fell()) {
 		dampen();
 	}
+	if(strokeInProgress && (millis()  > strokeEnd)) {
+		digitalWrite(STICK, LOW);
+		strokeInProgress = 0;
+	}
 }
 
 void strokeHigh() {
-  analogWrite(STICK, 255);
-  delay(19);
-  digitalWrite(STICK, LOW);
+	analogWrite(STICK, 255);
+	strokeEnd = millis() + strokeHighLength;
+	strokeInProgress = 1;
+  // delay(19);
+  // digitalWrite(STICK, LOW);
 }
 
 void strokeMid() {
   analogWrite(STICK, 255);
   delay(1);
   analogWrite(STICK, 128);
-  delay(60);
-  digitalWrite(STICK, LOW);
+  strokeInProgress = 1;
+  strokeEnd = millis() + strokeMidLength;
+  // delay(60);
+  // digitalWrite(STICK, LOW);
 }
 
 void dampen() {
@@ -241,7 +167,7 @@ void dampen() {
     analogWrite(DAMPER, i);
     delay(5);  
   }
-  delay(200);
+  delay(300);
   for(uint8_t i = 128; i > 40; i-=2) {
     analogWrite(DAMPER, i);
     delay(5);  
@@ -255,17 +181,19 @@ void dampen() {
 #define CHANNEL_PARAM_LED_MINIMUM 3
 #define CHANNEL_PARAM_LED_MAXIMUM 4
 #define CHANNEL_PARAM_LED_COUNT 5
+#define CHANNEL_PARAM_STROKE_HIGH_LENGTH 6
+#define CHANNEL_PARAM_STROKE_MID_LENGTH 7
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
 	if(myNote == pitch) {
 		setLed1();
 		switch(channel) {
 			case CHANNEL_SOLENOIDS:
-				if(127 == velocity) {
+				if(127 == velocity && !strokeInProgress) {
 					strokeHigh();
 				} else if(0 == velocity) {
 					dampen();
-				} else {
+				} else if(!strokeInProgress) {
 					strokeMid();
 				}
 				break;
@@ -281,6 +209,12 @@ void handleNoteOn(byte channel, byte pitch, byte velocity) {
 			case CHANNEL_PARAM_LED_COUNT:
 				setLedCount(velocity);
 				break;
+			case CHANNEL_PARAM_STROKE_HIGH_LENGTH:
+				strokeHighLength = velocity;
+				break;
+			case CHANNEL_PARAM_STROKE_MID_LENGTH:
+				strokeMidLength = velocity;
+				break;
 		}
 	}
 }
@@ -290,9 +224,5 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
 		ledsOff();
 		dampen();
 	}
-}
-
-void handleControlChange(byte channel, byte pitch, byte velocity) {
-	setLed2();
 }
 
