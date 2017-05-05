@@ -122,6 +122,7 @@ void setup(){
 	buttonsSetup();
 	outputsSetup();
 	midiSetup();
+	TCCR1B = TCCR1B & 0b11111000 | 1;
 }
 
 uint16_t lights[] = {4095, 4095, 4095, 4095, 500, 500, 500, 500};
@@ -135,32 +136,95 @@ void outputLights() {
 
 uint8_t step = 12;
 uint16_t minimum = 500;
+uint16_t maximum = 4095;
 
-void chase() {
-    if(lights[head] + step <= 4095) {
-    	lights[head] += step;
-    if(lights[tail] - step > minimum) {
-      lights[tail] -= step;
+static inline void setLedCount(uint8_t count) {
+  uint8_t i;
+
+  if(count > 7) {
+    count = 7;
+  }
+  if(count < 1) {
+    count = 1;
+  }
+  int8_t prevCount = head - tail;
+  uint8_t newHead = (tail + count) % 8;
+
+  if(prevCount < 0) {
+    prevCount += 8;
+  }
+
+  if(count > prevCount) {
+    lights[newHead] = lights[head];
+    for(i = 0; i < (count - prevCount); i++){
+      lights[(head + i)%8] = maximum;
     }
-    outputLights();
-  } else {
-    head = (head + 1) % 8;
-    tail = (tail + 1) % 8;
+  } else if(count < prevCount) {
+    lights[newHead] = lights[head];
+    for(i = 0; i < prevCount - count; i++) {
+      lights[(newHead + 1 + i) % 8] = minimum;
+    }
+  }
+
+  head = newHead;
+}
+
+  void initLights() {
+  for(int i = 0; i < 8; i++) {
+    if(head > tail){
+      if(i < tail) {
+        lights[i] = minimum;
+      } else if(i >= tail && i < head) {
+        lights[i] = maximum;
+      } else if(i >= head) {
+        lights[i] = minimum;
+      }
+    } else {
+      if(i < tail && i >= head) {
+        lights[i] = minimum;
+      } else if(i >= tail) {
+        lights[i] = maximum;
+      } else if(i < head) {
+        lights[i] = maximum;
+      }
+    }
+    
   }
 }
 
-uint16_t myDipConfig = 0;
+void chase() {
+	if(lights[head] + step <= maximum) {
+		lights[head] += step;
+		
+		if(lights[tail] - step > minimum) {
+			lights[tail] -= step;
+		}
+		outputLights();
+	} else {
+		head = (head + 1) % 8;
+		tail = (tail + 1) % 8;
+	}
+}
+
+uint8_t myNote = 0;
+
 void loop() {
-	myDipConfig = getDipSwitch();
+	myNote = getDipSwitch();
 	chase();
 	button1.update();
 	button2.update();
 	MIDI.read();
+	if(button1.fell()) {
+		strokeHigh();
+	}
+	if(button2.fell()) {
+		dampen();
+	}
 }
 
 void strokeHigh() {
   analogWrite(STICK, 255);
-  delay(25);
+  delay(19);
   digitalWrite(STICK, LOW);
 }
 
@@ -173,33 +237,56 @@ void strokeMid() {
 }
 
 void dampen() {
-  for(uint8_t i = 0; i <=128; i++) {
+  for(uint8_t i = 0; i <=128; i+=2) {
     analogWrite(DAMPER, i);
     delay(5);  
   }
-  for(uint8_t i = 128; i > 40; i--) {
+  delay(200);
+  for(uint8_t i = 128; i > 40; i-=2) {
     analogWrite(DAMPER, i);
     delay(5);  
   }
-  delay(100);
+//  delay(100);
   analogWrite(DAMPER, 0);
 }
 
+#define CHANNEL_SOLENOIDS 1
+#define CHANNEL_PARAM_LED_STEP 2
+#define CHANNEL_PARAM_LED_MINIMUM 3
+#define CHANNEL_PARAM_LED_MAXIMUM 4
+#define CHANNEL_PARAM_LED_COUNT 5
+
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
-	if((myDipConfig & 0x00FF) == pitch) {
+	if(myNote == pitch) {
 		setLed1();
-		if(127 == velocity) {
-			strokeHigh();
-		} else if(0 == velocity) {
-			dampen();
-		} else {
-			strokeMid();
+		switch(channel) {
+			case CHANNEL_SOLENOIDS:
+				if(127 == velocity) {
+					strokeHigh();
+				} else if(0 == velocity) {
+					dampen();
+				} else {
+					strokeMid();
+				}
+				break;
+			case CHANNEL_PARAM_LED_STEP:
+				step = velocity;
+				break;
+			case CHANNEL_PARAM_LED_MINIMUM:
+				minimum = velocity * 32;
+				break;
+			case CHANNEL_PARAM_LED_MAXIMUM:
+				maximum = velocity * 32;
+				break;
+			case CHANNEL_PARAM_LED_COUNT:
+				setLedCount(velocity);
+				break;
 		}
 	}
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity) {
-	if((myDipConfig & 0x00FF) == pitch) {
+	if(myNote == pitch) {
 		ledsOff();
 		dampen();
 	}
