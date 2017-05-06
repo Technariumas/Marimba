@@ -148,15 +148,15 @@ void PCA9685_Init() {
 	// if (TWI_SlaveAtAddress(PCA9685_InitStruct->Address))
 	// {
 
-		// TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		// TWI_BeginTransmission(0x40);
 		// TWI_Write(MODE1);
 		// TWI_Write(0);
 		// TWI_EndTransmission();
 
 		// uint8_t mode1 = 0;
-		// TWI_RequestFrom(PCA9685_InitStruct->Address, &mode1, 1);
+		// TWI_RequestFrom(0x40, &mode1, 1);
 		
-		// TWI_BeginTransmission(PCA9685_InitStruct->Address);
+		// TWI_BeginTransmission(0x40);
 		// TWI_Write(MODE1);
 		// TWI_Write(0x10);
 		// TWI_EndTransmission();
