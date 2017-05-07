@@ -10,6 +10,11 @@ db = Database()
 db.bind('mysql', host='', user='opit', passwd='332', db='marimbatest')
 db.generate_mapping(create_tables=True)
 
+durations = np.genfromtxt("../data/duration.csv")
+durations*=0.0001
+
+def get_duration():
+	return (datetime.strptime(time_slice_end, '%Y-%m-%d %H:%M:%S') - datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S')).seconds
 
 def rolling_window(a, window):
 	shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)

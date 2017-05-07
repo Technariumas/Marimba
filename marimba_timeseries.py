@@ -10,6 +10,10 @@ octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
+durations = 2*np.divide(durations, np.max(durations))
+#durations*= 0.125
+#print durations
+
 def make_threshold(array):
 	lowest = np.percentile(array, 25)
 	lower = np.percentile(array, 50)
@@ -31,17 +35,14 @@ midi = Midi(number_tracks=1, tempo=120, instrument=11)
 octave_series = np.zeros((16, duration))
 note_series = octave_series.copy()
 
+ind = 0
 for i, region in enumerate([1, 2, 3, 4]):
 	mb = mb_per_second_in_region(region)
 	ts = make_threshold(np.rint(mb)) #
-	ind = 0
 	for j, octave in enumerate(octaves):
-		octave_series[j, :][np.where(ts == octave)] = octave#(region, octave, 0.5, 127)
-		note_series[j, :][np.where(ts == octave)] = notes[i]
+		octave_series[ind, :][np.where(ts == octave)] = octave#(region, octave, 0.5, 127)
+		note_series[ind, :][np.where(ts == octave)] = notes[i]
 		ind+=1
-
-print octave_series
-
 
 '''
 def make_sequence(noteSeq, row):
@@ -54,11 +55,17 @@ for box in range(0, 16):
 	noteSeq = []
 	for frame in range(duration):
 			#sekos trukme
-			noteSeq.append(Note(note_series[frame], octave_series[frame], 0.125, 60))
-			noteSeq.append(Rest(0.125))
-			noteSeq.append(Rest(0.125))
-			noteSeq.append(Rest(0.125))
-	midi.seq_notes(noteSeq, time=0)
+			dur = np.random.choice(durations)
+			#dur = 0.125
+			el = Note(note_series[box,frame], octave_series[box,frame], dur, 127)
+			#noteSeq.append(el)
+			#noteSeq.append(el)
+			#noteSeq.append(el)
+			noteSeq.append(el)
+			noteSeq.append(Rest(1 - dur))
+			#noteSeq.append(Rest(0.125))
+			#noteSeq.append(Rest(0.125))
+	midi.seq_notes(noteSeq, time=1)
 midi.write("midi_output/regions.mid")
 
 exit()
