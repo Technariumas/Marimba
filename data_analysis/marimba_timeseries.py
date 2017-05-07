@@ -14,6 +14,7 @@ durations = 0.5*np.divide(durations, np.max(durations))
 #durations*= 0.125
 #print durations
 
+
 def make_threshold(array):
 	lowest = np.percentile(array, 25)
 	lower = np.percentile(array, 50)
@@ -51,7 +52,7 @@ def make_sequence(noteSeq, row):
 	return noteSeq	'''
 
 
-for box in range(0, 16):
+for box in range(16):
 	noteSeq = []
 	for frame in range(duration):
 			#sekos trukme
@@ -68,24 +69,13 @@ for box in range(0, 16):
 	midi.seq_notes(noteSeq, time=1)
 midi.write("midi_output/regions.mid")
 
-exit()
 
 plt.figure()
 for region in [1, 2, 3, 4]:
 	ax = plt.subplot(2, 2, region)
-	mb = get_mb_in_region(region)
-	session_start = get_time_start_in_region(region)
-	arr = np.column_stack([session_start, mb])
-	df = pd.DataFrame(arr, columns=['time', 'mb'])
-	#np.column_stack([session_start, mb]), index=['time', 'mb'])
-	#avg = pd.rolling_median(df, window, center=True)
-	ax.plot(df['time'], df['mb'])
-	avg = pd.rolling_mean(df['mb'], window_size, center=True)
-	ax.plot(df['time'], avg)
-	#ax.plot_date(session_start, mb, c='k', markersize=1)
-	#ax.plot(session_start, avg, c='r', linestyle='-', markersize=1)
-	#plt.date_plot(districts, mb)
-	plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%S'))
-	ax.set_yscale('log')
+	mb = mb_per_second_in_region(region)#make_threshold(np.rint(mb))
+	ax.plot(mb)
+	#plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%S'))
+	#ax.set_yscale('log')
 plt.ylabel("MB, vidurkis")
-plt.savefig("img/test_avg", bbox_inches="tight")
+plt.savefig("img/mb_per_second_regions", bbox_inches="tight")

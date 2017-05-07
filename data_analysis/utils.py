@@ -10,7 +10,7 @@ db = Database()
 db.bind('mysql', host='', user='opit', passwd='332', db='marimbatest')
 db.generate_mapping(create_tables=True)
 
-durations = np.genfromtxt("../data/duration.csv")
+durations = np.genfromtxt("../../data/duration.csv")
 durations*=0.0001
 
 def get_duration():
@@ -75,9 +75,3 @@ def get_session_duration():
 def mb_per_second_in_region(region):
 	return db.select("sum(mb) as sum_mb from data where time_start > $time_slice_start and time_start < $time_slice_end and cell_grp = $region GROUP BY time_start")
 
-
-#print get_list_of_districts
-
-#durations = get_session_duration()[40000:44000]
-#print np.min(durations), np.mean(durations), np.max(durations)
-#np.savetxt("../data/duration.csv", durations)
