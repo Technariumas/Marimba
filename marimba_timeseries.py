@@ -10,7 +10,7 @@ octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
-durations = 2*np.divide(durations, np.max(durations))
+durations = 0.5*np.divide(durations, np.max(durations))
 #durations*= 0.125
 #print durations
 
@@ -62,7 +62,7 @@ for box in range(0, 16):
 			#noteSeq.append(el)
 			#noteSeq.append(el)
 			noteSeq.append(el)
-			noteSeq.append(Rest(1 - dur))
+			noteSeq.append(Rest(0.5 - dur))
 			#noteSeq.append(Rest(0.125))
 			#noteSeq.append(Rest(0.125))
 	midi.seq_notes(noteSeq, time=1)
