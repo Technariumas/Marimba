@@ -28,9 +28,9 @@ def get_Perlin_noise():
 
 def make_sequence(noteSeq, row):
 	for el in row:
-		noteSeq.append(Rest(0.5))
+		noteSeq.append(Rest(1))
 		noteSeq.append(Note(el[0], el[1], el[2], el[3]))
-		noteSeq.append(Rest(0.5))
+		#noteSeq.append(Rest(0.5))
 	return noteSeq	
 
 for frame in range(0, duration):
@@ -42,7 +42,7 @@ for frame in range(0, duration):
 			for j, octave in enumerate([3, 4, 5, 6]):
 				for k, loudness in enumerate(np.random.choice([127, 60, 60, 0, 0], 5)):
 					dur = np.random.choice(durations)
-					print i, j, k, cnt, loudness, frame, "i, j, cnt, loudness, frame"
+					print cnt, loudness, frame, "cnt, loudness, frame"
 					#print 'note, octave, loudness', note, octave, loudness[i, j]
 					sequence[cnt, frame] = (cnt, 0, dur, loudness)
 					cnt += 1
