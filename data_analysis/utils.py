@@ -21,11 +21,6 @@ def rolling_window(a, window):
 	strides = a.strides + (a.strides[-1],)
 	return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
 
-def make_sequence(noteSeq, row):
-	for el in row:
-		noteSeq.append(Note(el[0], el[1], el[2], el[3]))
-	return noteSeq	
-
 def rolling_sum(a, n) :
 	return np.convolve(a,np.ones(n),'same')
 

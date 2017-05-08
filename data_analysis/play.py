@@ -8,10 +8,12 @@ from marimba_config import *
 
 octaves = [1, 2, 3, 4]
 note_values = ["C", "D", "F", "G"]
+durations = 0.25*np.divide(durations, np.max(durations))
 
-
-#def_get_random_duration():
-	
+def make_sequence(noteSeq, row):
+	for el in row:
+		noteSeq.append(Note(el[0], el[1], el[2], el[3]))
+	return noteSeq	
 
 def make_threshold(noise_array):
 	lower_third = np.percentile(noise_array, 33)
@@ -29,10 +31,9 @@ def get_Perlin_noise():
 	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
 	return noise_array
 	
-duration = 60 #In 1/16ths. 30 seconds, 60 quarter notes, 120 1/8th notes, 240 1/16th notes
+duration = 60*8
 
 #fig = plt.figure()
-
 
 sequence = np.zeros((16, duration), dtype=[('value', 'i2'), ('octave', 'i2'), ('dur', 'f4'), ('vol', 'i4')])
 
@@ -46,7 +47,7 @@ for frame in range(0, duration):
 				dur = np.random.choice(durations)
 				#print i, j, cnt, frame, "i, j, i*j, frame"
 				#print 'note, octave, loudness', note, octave, loudness[i, j]
-				sequence[cnt, frame] = (note, octave, 0.125, loudness[i, j])
+				sequence[cnt, frame] = (note, octave, dur, loudness[i, j])
 				cnt += 1
 	#c = plt.imshow(noise, interpolation=None, cmap='viridis')
 	#plt.colorbar(c)

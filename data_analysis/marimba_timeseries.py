@@ -69,6 +69,7 @@ for box in range(16):
 	midi.seq_notes(noteSeq, time=1)
 midi.write("midi_output/regions.mid")
 
+exit()
 
 plt.figure()
 for region in [1, 2, 3, 4]:
