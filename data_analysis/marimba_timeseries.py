@@ -1,82 +1,71 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import *
 from pyknon.genmidi import Midi
 from pyknon.music import Note, NoteSeq, Rest
+from note_mapping import *
+from opensimplex import OpenSimplex
 
 octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
 durations = 0.5*np.divide(durations, np.max(durations))
-#durations*= 0.125
-#print durations
-
-
-def make_threshold(array):
-	lowest = np.percentile(array, 25)
-	lower = np.percentile(array, 50)
-	upper = np.percentile(array, 75)
-	lowest_octave = np.where(array <= lowest)
-	lower_octave = np.where((array <= lower) & (array > lowest))
-	upper_octave = np.where((array <= upper) & (array > lower))
-	top_octave = np.where(array > upper)
-	array[lowest_octave] = 3
-	array[lower_octave] = 4
-	array[upper_octave] = 5
-	array[top_octave] = 6		
-	return array
 
 duration = get_duration() - 1
-sequence = np.zeros((16, duration), dtype=[('value', 'i2'), ('octave', 'i2'), ('dur', 'f4'), ('vol', 'i4')])
 midi = Midi(number_tracks=1, tempo=120, instrument=11)
 
-octave_series = np.zeros((16, duration))
-note_series = octave_series.copy()
+testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
-ind = 0
+
+sequence = -1*np.ones((10, 8, duration), dtype=int)
+timeseries = -1*np.ones((4, duration), dtype=int)
+
+
 for i, region in enumerate([1, 2, 3, 4]):
 	mb = mb_per_second_in_region(region)
-	ts = make_threshold(np.rint(mb)) #
-	for j, octave in enumerate(octaves):
-		octave_series[ind, :][np.where(ts == octave)] = octave#(region, octave, 0.5, 127)
-		note_series[ind, :][np.where(ts == octave)] = notes[i]
-		ind+=1
-
-'''
-def make_sequence(noteSeq, row):
-	for el in row:
-		noteSeq.append(Note(el[0], el[1], el[2], el[3]))
-	return noteSeq	'''
+	timeseries[i,:] = make_threshold(np.rint(mb)).astype(int)
 
 
-for box in range(16):
+def get_Perlin_noise():
+	noise_array = np.empty((sequence.shape))
+	for i, x in np.ndenumerate(noise_array):
+		noise_array[i] = 1 + tmp.noise2d(i[0], i[1])
+	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
+	return noise_array.astype(int)
+
+for frame in range(duration):
+	#tmp = OpenSimplex(seed=frame)
+	#loudness_array = get_Perlin_noise()
+	time_slice = timeseries[:, frame]
+	for i, octave in enumerate(time_slice):
+		current_boxes = get_boxes(notes[i], octave)
+		sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]]
+		
+		
+
+for i, box in np.ndenumerate(index_array):
 	noteSeq = []
-	for frame in range(duration):
-			#sekos trukme
+	testNoteSeq = []
+	note_sequence = sequence[i]
+	for i, sound in enumerate(note_sequence):
 			dur = np.random.choice(durations)
-			#dur = 0.125
-			el = Note(note_series[box,frame], octave_series[box,frame], dur, 127)
-			#noteSeq.append(el)
-			#noteSeq.append(el)
-			#noteSeq.append(el)
-			noteSeq.append(el)
-			noteSeq.append(Rest(0.5 - dur))
-			#noteSeq.append(Rest(0.125))
-			#noteSeq.append(Rest(0.125))
-	midi.seq_notes(noteSeq, time=1)
-midi.write("midi_output/regions.mid")
-
-exit()
-
-plt.figure()
-for region in [1, 2, 3, 4]:
-	ax = plt.subplot(2, 2, region)
-	mb = mb_per_second_in_region(region)#make_threshold(np.rint(mb))
-	ax.plot(mb)
-	#plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%S'))
-	#ax.set_yscale('log')
-plt.ylabel("MB, vidurkis")
-plt.savefig("img/mb_per_second_regions", bbox_inches="tight")
+			if (sound == -1):
+				noteSeq.append(Rest(0.5))
+				testNoteSeq.append(Rest(0.5))
+			elif note_sequence[i-1] <> -1:
+				sound = -1
+				noteSeq.append(Rest(0.5))
+				testNoteSeq.append(Rest(0.5))
+			else:
+				loudness = np.random.choice([127, 127, 60, 60, 60])		
+				noteSeq.append(Rest(0.5-dur))
+				noteSeq.append(Note(sound, 0, dur, loudness))
+				testNote, testOctave = get_real_note_from_index(sound)
+				testNoteSeq.append(Rest(0.5-dur))
+				testNoteSeq.append(Note(testNote, testOctave, dur, loudness))
+	midi.seq_notes(noteSeq, time=0)
+	testMidi.seq_notes(testNoteSeq, time=0)
+midi.write("midi_output/regions_80.mid")
+testMidi.write("midi_output/test_regions_80.mid")
