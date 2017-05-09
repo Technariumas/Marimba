@@ -56,10 +56,10 @@ class Marimba:
 		time.sleep(delay)
 		self.stop(id=id)
 
-	def playAll(self):
-		for n in range(4):
-			self.play(id=n, velocity=127)
-			time.sleep(0.5)
+	def playAll(self, notes):
+		for note in notes:
+			self.play(id=note, velocity=127)
+			time.sleep(0.25)
 		time.sleep(5)
-		for n in range(4):
-			self.stop(id=n)
+		for note in notes:
+			self.stop(id=note)
