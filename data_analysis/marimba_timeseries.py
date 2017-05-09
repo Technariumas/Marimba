@@ -38,7 +38,7 @@ def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb):
 
 def render_timeseries_sequence():
 	timeseries = -1*np.ones((4, duration), dtype=int)
-	for i, region in enumerate([1, 2, 3, 4]):
+	for i, region in enumerate([1]):
 		timestamps = get_unique_times_start(region)
 		mb = mb_per_second_in_region(region)
 		timestamps, mb = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb)
