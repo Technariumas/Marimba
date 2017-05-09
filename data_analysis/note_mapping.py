@@ -19,18 +19,16 @@ def get_switch_values():
 		a = a[::-1]
 		b = ""
 		for i, n in enumerate(a):
-			print i, n
 			if n <> "0":
-				b = b+str(i+1)+","
-		switch_list.append("index:"+str(val)+"|"+b+"a:"+a)
+				b = b+str(i+1)
+		switch_list.append(b)
 	switch_array = np.reshape(switch_list, (10, 8))	
 	np.savetxt("conf/switches.txt", switch_array, fmt='%10s')
-	#empty_boxes = np.where(geom == "00")
 
-get_switch_values()
 
 def get_column(array, col):
 	return array[:,col]
+
 
 def get_row(array, row):
 	return array[row,:]

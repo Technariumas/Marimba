@@ -11,7 +11,21 @@ db.bind('mysql', host='', user='opit', passwd='332', db='marimbatest')
 db.generate_mapping(create_tables=True)
 
 durations = np.genfromtxt("../../data/duration.csv")
-durations*=0.0001
+durations*=0.0005
+
+def make_threshold(array):
+	lowest = np.percentile(array, 25)
+	lower = np.percentile(array, 50)
+	upper = np.percentile(array, 75)
+	lowest_octave = np.where(array <= lowest)
+	lower_octave = np.where((array <= lower) & (array > lowest))
+	upper_octave = np.where((array <= upper) & (array > lower))
+	top_octave = np.where(array > upper)
+	array[lowest_octave] = 3
+	array[lower_octave] = 4
+	array[upper_octave] = 5
+	array[top_octave] = 6		
+	return array
 
 def get_duration():
 	return (datetime.strptime(time_slice_end, '%Y-%m-%d %H:%M:%S') - datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S')).seconds
@@ -49,6 +63,9 @@ def get_mb():
 def get_time_start():
 	return db.select("select time_start from data where time_start > $time_slice_start and time_start < $time_slice_end")
 
+@db_session
+def get_unique_times_start(region):
+	return db.select("select distinct time_start from data where time_start > $time_slice_start and time_start < $time_slice_end and cell_grp = $region")
 
 @db_session
 def get_time_end():
