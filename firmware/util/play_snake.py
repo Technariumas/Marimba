@@ -7,6 +7,5 @@ m.connect()
 
 print("Playing boxes 0-79...")
 while True:
-	m.playAll([x for x in range(80)])
+	m.playSequence([x for x in range(80)], 0.25, 2)
 	time.sleep(5)
-
