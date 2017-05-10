@@ -51,6 +51,19 @@ class Marimba:
 		self.output.note_on(channel=self.CHANNEL_PARAM_DAMPER_MAX_DRIVE, note=id, velocity=drive)
 		self.test(id=id, velocity=127)
 
+	def setLightStep(self, id, step=12):
+		self.output.note_on(channel=self.CHANNEL_PARAM_LED_STEP, note=id, velocity=step)
+
+	def setLightMinimum(self, id, minimum=15):
+		self.output.note_on(channel=self.CHANNEL_PARAM_LED_MINIMUM, note=id, velocity=minimum)
+
+	def setLightMaximum(self, id, maximum=127):
+		self.output.note_on(channel=self.CHANNEL_PARAM_LED_MAXIMUM, note=id, velocity=maximum)
+
+	def setLightCount(self, id, count=4):
+		self.output.note_on(channel=self.CHANNEL_PARAM_LED_COUNT, note=id, velocity=count)
+
+
 	def test(self, id, velocity=127, delay=1):
 		self.play(id=id, velocity=127)
 		time.sleep(delay)
