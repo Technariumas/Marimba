@@ -10,8 +10,6 @@ db = Database()
 db.bind('mysql', host='', user='opit', passwd='332', db='marimbatest')
 db.generate_mapping(create_tables=True)
 
-durations = np.genfromtxt("../../data/duration.csv")
-durations*=0.0005
 
 def make_threshold(array):
 	lowest = np.percentile(array, 25)
@@ -43,7 +41,6 @@ def moving_sum(a, n) :
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:]# / n
 
-
 def window(size):
     return np.ones(size)/float(size)
     
@@ -62,6 +59,11 @@ def get_mb():
 @db_session
 def get_time_start():
 	return db.select("select time_start from data where time_start > $time_slice_start and time_start < $time_slice_end")
+
+@db_session
+def get_session_count(region):
+	return db.select("select count(time_start) from data where time_start > $time_slice_start and time_start < $time_slice_end and cell_grp = $region group by time_start")
+
 
 @db_session
 def get_unique_times_start(region):

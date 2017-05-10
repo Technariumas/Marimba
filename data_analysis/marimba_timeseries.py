@@ -9,14 +9,15 @@ from pyknon.music import Note, NoteSeq, Rest
 from note_mapping import *
 from opensimplex import OpenSimplex
 from power_supply_spatial import *
+import sys
 
-
+outputName = sys.argv[1]
 octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
-durations = 0.5*np.divide(durations, np.max(durations))
-
+durations = get_session_duration()
+durations = 0.0005*0.5*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
 midi = Midi(number_tracks=1, tempo=120, instrument=11)
 testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
@@ -58,16 +59,11 @@ def render_timeseries_sequence():
 		timeseries[i,:] = make_threshold(np.rint(mb)).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration): 
-			#tmp = OpenSimplex(seed=frame)
-			#loudness_array = get_Perlin_noise()
 			time_slice = timeseries[:, frame]#octave value array sliced in time
 			for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
 				current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
 				sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
 				loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
-				#print sequence[current_boxes[0], current_boxes[1], frame].shape, loudness[current_boxes[0], current_boxes[1], frame].shape
-				#print loudness[:,:,frame].shape
-				#print volumeseries[i, frame].shape
 	return sequence, loudness
 
 		
@@ -94,10 +90,8 @@ def play_timeseries(sequence, loudness):
 					testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
 		midi.seq_notes(noteSeq, time=0)
 		testMidi.seq_notes(testNoteSeq, time=0)
-	midi.write("midi_output/regions_longer.mid")
-	testMidi.write("midi_output/test_regions_longer.mid")
-
-sequence, loudness = render_timeseries_sequence()
+	midi.write("midi_output/"+outputName+".mid")
+	testMidi.write("midi_output/"+outputName+".mid")
 
 #print sequence[np.where((sequence == -1) & (loudness <> 0))]
 
@@ -106,9 +100,10 @@ def test_power_supply_safety(loudness):
 		for group in range(1, 11): #iterating over all groups
 			group_indices = return_current_power_supply_group_indices(group)
 			if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
-				too_loud = np.where(loudness[:,:, frame][group_indices] > 60)
 				loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
 	return loudness			
+
+sequence, loudness = render_timeseries_sequence()
 
 loudness = test_power_supply_safety(loudness)
 play_timeseries(sequence, loudness)

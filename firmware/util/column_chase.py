@@ -6,7 +6,7 @@ import numpy as np
 m = Marimba()
 m.connect()
 
-print("Rolling rows...")
+print("Rolling columns...")
 index_array = np.reshape(np.arange(80), (8, 10)).T
 
 while True:
