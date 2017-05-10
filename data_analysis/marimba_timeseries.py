@@ -8,6 +8,8 @@ from pyknon.genmidi import Midi
 from pyknon.music import Note, NoteSeq, Rest
 from note_mapping import *
 from opensimplex import OpenSimplex
+from power_supply_spatial import *
+
 
 octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
@@ -20,6 +22,7 @@ midi = Midi(number_tracks=1, tempo=120, instrument=11)
 testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
+loudness = np.zeros((10, 8, duration), dtype=int)
 
 def get_Perlin_noise():
 	noise_array = np.empty((sequence.shape))
@@ -28,35 +31,52 @@ def get_Perlin_noise():
 	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
 	return noise_array.astype(int)
 
-def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb):
+def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions):
 		time_slices_list = [datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=seconds) for seconds in range(1, duration+1)]
 		for i, moment in enumerate(time_slices_list): #time slices -- contiguous seconds from slice_start to slice_end
 			if (moment <> timestamps[i]):
 				timestamps.insert(i, moment)
 				mb.insert(i, 0)
-		return timestamps, mb
+				sessions.insert(i, 0)
+		return timestamps, mb, sessions
 
+def get_volume(sessions):
+	sessions = np.asarray(sessions)
+	mean_sessions = np.mean(sessions)
+	sessions[np.where(sessions >= mean_sessions)] = 127
+	sessions[np.where((sessions < mean_sessions) & (sessions <> 0))] = 60
+	return sessions
+	
 def render_timeseries_sequence():
 	timeseries = -1*np.ones((4, duration), dtype=int)
-	for i, region in enumerate([1]):
+	volumeseries = np.zeros((4, duration), dtype=int) #array storing volume of each region (volume depends on session count)
+	for i, region in enumerate([1, 2, 3, 4]): #iterating over 4 notes
 		timestamps = get_unique_times_start(region)
 		mb = mb_per_second_in_region(region)
-		timestamps, mb = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb)
+		sessions = get_session_count(region)
+		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
 		timeseries[i,:] = make_threshold(np.rint(mb)).astype(int)
-	for frame in range(duration):
-		#tmp = OpenSimplex(seed=frame)
-		#loudness_array = get_Perlin_noise()
-		time_slice = timeseries[:, frame]
-		for i, octave in enumerate(time_slice):
-			current_boxes = get_boxes(notes[i], octave)
-			sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]]
-	return sequence		
+		volumeseries[i,:] = get_volume(sessions)
+		for frame in range(duration): 
+			#tmp = OpenSimplex(seed=frame)
+			#loudness_array = get_Perlin_noise()
+			time_slice = timeseries[:, frame]#octave value array sliced in time
+			for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
+				current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
+				sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
+				loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
+				#print sequence[current_boxes[0], current_boxes[1], frame].shape, loudness[current_boxes[0], current_boxes[1], frame].shape
+				#print loudness[:,:,frame].shape
+				#print volumeseries[i, frame].shape
+	return sequence, loudness
+
 		
-def play_timeseries(sequence):
+def play_timeseries(sequence, loudness):
 	for i, box in np.ndenumerate(index_array):
 		noteSeq = []
 		testNoteSeq = []
 		note_sequence = sequence[i]
+		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
 				dur = np.random.choice(durations)
 				if (sound == -1):
@@ -67,23 +87,31 @@ def play_timeseries(sequence):
 					noteSeq.append(Rest(0.5))
 					testNoteSeq.append(Rest(0.5))
 				else:
-					loudness = np.random.choice([127, 127, 60, 60, 60])		
-					noteSeq.append(Note(sound, 0, dur, loudness))
+					noteSeq.append(Note(sound, 0, dur, volume_sequence[j]))
 					noteSeq.append(Rest(0.5-dur))
 					testNoteSeq.append(Rest(0.5-dur))
 					testNote, testOctave = get_real_note_from_index(sound)
-					testNoteSeq.append(Note(testNote, testOctave, dur, loudness))
+					testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
 		midi.seq_notes(noteSeq, time=0)
 		testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/regions_longer.mid")
 	testMidi.write("midi_output/test_regions_longer.mid")
 
-sequence = render_timeseries_sequence()
+sequence, loudness = render_timeseries_sequence()
 
-#for i in range(duration):
-#	print sequence[:, :, i]
+#print sequence[np.where((sequence == -1) & (loudness <> 0))]
 
-play_timeseries(sequence)
+def test_power_supply_safety(loudness):
+	for frame in range(duration):
+		for group in range(1, 11): #iterating over all groups
+			group_indices = return_current_power_supply_group_indices(group)
+			if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
+				too_loud = np.where(loudness[:,:, frame][group_indices] > 60)
+				loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
+	return loudness			
+
+loudness = test_power_supply_safety(loudness)
+play_timeseries(sequence, loudness)
 
 '''
 vo = 60*np.ones((5, 6), dtype=int)
