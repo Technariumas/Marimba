@@ -65,6 +65,7 @@ def render_timeseries_sequence():
 				current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
 				sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
 				loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
+				#print sequence[current_boxes[0], current_boxes[1], frame].shape, loudness[current_boxes[0], current_boxes[1], frame].shape
 				#print loudness[:,:,frame].shape
 				#print volumeseries[i, frame].shape
 	return sequence, loudness
@@ -97,8 +98,8 @@ def play_timeseries(sequence, loudness):
 	testMidi.write("midi_output/test_regions_longer.mid")
 
 sequence, loudness = render_timeseries_sequence()
-#for i in range(duration):
-#	print sequence[:, :, i]
+
+#print sequence[np.where((sequence == -1) & (loudness <> 0))]
 
 def test_power_supply_safety(loudness):
 	for frame in range(duration):
@@ -110,7 +111,6 @@ def test_power_supply_safety(loudness):
 	return loudness			
 
 loudness = test_power_supply_safety(loudness)
-
 play_timeseries(sequence, loudness)
 
 '''
