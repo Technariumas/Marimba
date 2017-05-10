@@ -17,10 +17,10 @@ note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
 durations = get_session_duration()
-durations = 0.0005*0.5*np.divide(durations, np.max(durations))
+durations = 0.0005*0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
-midi = Midi(number_tracks=1, tempo=120, instrument=11)
-testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
+midi = Midi(number_tracks=1, tempo=240, instrument=11)
+testMidi = Midi(number_tracks=1, tempo=240, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
 loudness = np.zeros((10, 8, duration), dtype=int)
