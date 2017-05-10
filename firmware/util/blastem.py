@@ -1,13 +1,14 @@
 #!/usr/bin/python
 from marimba import Marimba
-import time
+from time import sleep
+
 
 m = Marimba()
 m.connect()
 
 print("Blasting some MIDI notes...")
 while True:
-	m.play(2)
-	time.sleep(0.5)
-	m.stop(2)
-	time.sleep(2)
+	m.setLightCount(127, 1)
+	sleep(0.1)
+	m.setLightCount(127, 4)
+	sleep(0.1)
