@@ -36,13 +36,14 @@ def make_threshold(noise_array):
 	return np.rint(noise_array)
 
 
-for note in range(0, 79):
-	tmp = OpenSimplex(seed=note)
-	loudness = get_Perlin_noise((79, 1))
+for note in range(65, 69):
+	print note
 	noteSeq = []
 	for i in range(60):
+		tmp = OpenSimplex(seed=note)
+		loudness = get_Perlin_noise((79, 1))
 		if (loudness[note] > 0):
-			noteSeq.append(Note(note, 0, 0.5, loudness[note]))
+			#noteSeq.append(Note(note, 0, 0.5, loudness[i]))
 			noteSeq.append(Rest(0.5))
 		else:
 			noteSeq.append(Rest(1))	
