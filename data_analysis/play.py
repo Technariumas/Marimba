@@ -34,7 +34,24 @@ def make_threshold(noise_array):
 	noise_array[np.where(noise_array == upper_third)] = 127
 	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
-	
+
+
+noteSeq = []
+for i in range(60):
+		noteSeq.append(Note(55, 0, 0.125, 127))
+		noteSeq.append(Rest(0.25))
+
+print noteSeq
+midi.seq_notes(noteSeq, time=0)
+midi.write("midi_output/"+outputName+".mid")
+
+
+exit()	
+def make_sequence(noteSeq, row):
+		noteSeq.append(Note(55, 0, 0.125, 127))
+		noteSeq.append(Rest(0.25))
+		return noteSeq	
+
 
 for j, box in np.ndenumerate((index_array)):
 			noteSeq = []
