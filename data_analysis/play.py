@@ -27,20 +27,20 @@ def get_Perlin_noise(shape):
 	return noise_array
 
 def make_threshold(noise_array):
-	lower_third = np.percentile(noise_array, 33)
-	upper_third = np.percentile(noise_array, 80)
+	lower_third = np.percentile(noise_array, 10)
+	upper_third = np.percentile(noise_array, 70)
 	noise_array = np.clip(noise_array, lower_third, upper_third)
 	noise_array[np.where(noise_array == lower_third)] = 0
 	noise_array[np.where(noise_array == upper_third)] = 127
 	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
 
-for note in range(0, 79):
+for note in range(3, 8):
 	noteSeq = []
 	for dur in range(60):
 		noteSeq.append(Rest(0.5))
-		noteSeq.append(Note(note, 0, 0.5, 60))
-		noteSeq.append(Rest(0.5))
+		noteSeq.append(Note(note, 0, 0.25, 60))
+		#noteSeq.append(Rest(0.5))
 	midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
 		
