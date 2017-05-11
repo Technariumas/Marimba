@@ -43,8 +43,9 @@ for note in range(0, 4):
 		loudness = get_Perlin_noise((60, 1))
 		if (loudness[dur] > 0):
 			#print loudness[dur], 'loudness'
-			noteSeq.append(Note(note, 0, 0.25, loudness[dur]))
 			noteSeq.append(Rest(0.5))
+			noteSeq.append(Note(note, 0, 0.25, loudness[dur]))
+			#noteSeq.append(Rest(0.5))
 		elif (loudness[dur] == 0):
 			print "do nothing"
 			noteSeq.append(Rest(1))	
