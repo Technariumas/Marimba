@@ -42,11 +42,14 @@ for note in range(65, 69):
 	for i in range(60):
 		tmp = OpenSimplex(seed=note)
 		loudness = get_Perlin_noise((79, 1))
+		
 		if (loudness[note] > 0):
-			#noteSeq.append(Note(note, 0, 0.5, loudness[i]))
-			noteSeq.append(Rest(0.5))
+			print loudness[note], 'loudness'
+			noteSeq.append(Note(note, 0, 0.5, loudness[i]))
+			#noteSeq.append(Rest(0.5))
 		else:
-			noteSeq.append(Rest(1))	
+			print "do nothing"
+			#noteSeq.append(Rest(1))	
 	midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
 
