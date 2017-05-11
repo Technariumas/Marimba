@@ -35,12 +35,14 @@ def make_threshold(noise_array):
 	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
 
-for note in range(3, 8):
+for note in range(0, 79):
 	noteSeq = []
 	for dur in range(60):
 		noteSeq.append(Rest(0.5))
 		noteSeq.append(Note(note, 0, 0.25, 60))
 		#noteSeq.append(Rest(0.5))
+	if note == 15:
+		print noteSeq	
 	midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
 		
