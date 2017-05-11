@@ -5,10 +5,14 @@ from utils import *
 from opensimplex import OpenSimplex
 from datetime import datetime, timedelta
 from marimba_config import *
+from power_supply_spatial import *
+import sys
+
+outputName = sys.argv[1]
 
 octaves = [1, 2, 3, 4]
 note_values = ["C", "D", "F", "G"]
-durations = 0.25*np.divide(durations, np.max(durations))
+#durations = 0.25*np.divide(durations, np.max(durations))
 
 def make_sequence(noteSeq, row):
 	for el in row:
@@ -21,48 +25,75 @@ def make_threshold(noise_array):
 	noise_array = np.clip(noise_array, lower_third, upper_third)
 	noise_array[np.where(noise_array == lower_third)] = 0
 	noise_array[np.where(noise_array == upper_third)] = 127
+	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
 	
-def get_Perlin_noise():
-	noise_array = np.empty((4, 4))
+def get_Perlin_noise(shape):
+	noise_array = np.zeros((shape))	
 	for i, x in np.ndenumerate(noise_array):
 		noise_array[i] = 1 + tmp.noise2d(i[0], i[1])
 	#print np.min(noise_array), np.mean(noise_array), np.max(noise_array)	
 	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
 	return noise_array
 	
-duration = 60*8
+def test_power_supply_safety(loudness):
+	for frame in range(duration):
+		for group in range(1, 11): #iterating over all groups
+			group_indices = return_current_power_supply_group_indices(group)
+			if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
+				loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
+	return loudness		
 
-#fig = plt.figure()
+		
+def play_timeseries(sequence):
+	index_array = np.arange(80)#range(0, 80)*np.ones((10, 8))
+	index_array = np.reshape(index_array, (8, 10)).T
+	for i, box in np.ndenumerate(index_array):
+		print box
+		noteSeq = []
+		note_sequence = sequence[i]
+		print note_sequence
+		for j, sound in enumerate(note_sequence):
+				#dur = np.random.choice([0.5, 0.5, 1, 0.25])
+				#if (sound == -1):
+					#print "quiet"
+					#noteSeq.append(Rest(0.5))
+					#testNoteSeq.append(Rest(0.5))
+				#if note_sequence[j-1] <> -1:
+				#	sound = -1
+					#noteSeq.append(Rest(1))
+					#testNoteSeq.append(Rest(0.5))
+				#else:
+				noteSeq.append(Note(box, 0, 0.125, sound))
+		midi.seq_notes(noteSeq, time=0)
+		#testMidi.seq_notes(testNoteSeq, time=0)
+	midi.write("midi_output/"+outputName+".mid")
 
-sequence = np.zeros((16, duration), dtype=[('value', 'i2'), ('octave', 'i2'), ('dur', 'f4'), ('vol', 'i4')])
-
-for frame in range(0, duration):
-	tmp = OpenSimplex(seed=frame)
-	loudness = get_Perlin_noise()
-	cnt = 0
-	while cnt < 16:
-		for i, note in enumerate([0, 2, 5, 7]):
-			for j, octave in enumerate([3, 4, 5, 6]):
-				dur = np.random.choice(durations)
-				#print i, j, cnt, frame, "i, j, i*j, frame"
-				#print 'note, octave, loudness', note, octave, loudness[i, j]
-				sequence[cnt, frame] = (note, octave, dur, loudness[i, j])
-				cnt += 1
-	#c = plt.imshow(noise, interpolation=None, cmap='viridis')
-	#plt.colorbar(c)
-#plt.show()	
 	
+duration = 60
 
 midi = Midi(number_tracks=1, tempo=120, instrument=11)
-for row in sequence:
+
+sequence = -1*np.ones((10, 8, duration), dtype=int)
+
+for moment in range(0, duration):
+	frame = sequence[:, :, moment]
+	tmp = OpenSimplex(seed=moment)
+	sequence[:, :, moment] = get_Perlin_noise(frame.shape)
+
+sequence = test_power_supply_safety(sequence)
+play_timeseries(sequence)
+exit()
+
+'''for row in sequence:
+		print row, len(row), "length"
 		noteSeq = []
 		noteSeq = make_sequence(noteSeq, row)
 		midi.seq_notes(noteSeq, time=0)
 		
 midi.write("midi_output/test.mid")
-
-
+'''
+exit()
 
 '''
 for i, region in enumerate(regions):
