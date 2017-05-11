@@ -55,7 +55,8 @@ def play_timeseries(sequence):
 		print sequence[i], "sequence" 
 		for j, sound in enumerate(note_sequence):
 			if note_sequence[j-1] <> 0:
-				sound = -1
+				print sound, "sound", note_sequence[j-1]
+				sound = 0
 				noteSeq.append(Rest(0.25))
 			else:
 				print "play", box, note_sequence[j]
