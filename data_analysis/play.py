@@ -9,15 +9,22 @@ from power_supply_spatial import *
 import sys
 
 outputName = sys.argv[1]
+midi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 octaves = [1, 2, 3, 4]
 note_values = ["C", "D", "F", "G"]
 #durations = 0.25*np.divide(durations, np.max(durations))
 
-def make_sequence(noteSeq, row):
-	for el in row:
-		noteSeq.append(Note(el[0], el[1], el[2], el[3]))
-	return noteSeq	
+index_array = np.arange(80)#range(0, 80)*np.ones((10, 8))
+index_array = np.reshape(index_array, (8, 10)).T
+
+def get_Perlin_noise(shape):
+	noise_array = np.zeros((shape))	
+	for i, x in np.ndenumerate(noise_array):
+		noise_array[i] = 1 + tmp.noise2d(i[0], i[1])
+	#print np.min(noise_array), np.mean(noise_array), np.max(noise_array)	
+	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
+	return noise_array
 
 def make_threshold(noise_array):
 	lower_third = np.percentile(noise_array, 50)
@@ -28,13 +35,32 @@ def make_threshold(noise_array):
 	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
 	
-def get_Perlin_noise(shape):
-	noise_array = np.zeros((shape))	
-	for i, x in np.ndenumerate(noise_array):
-		noise_array[i] = 1 + tmp.noise2d(i[0], i[1])
-	#print np.min(noise_array), np.mean(noise_array), np.max(noise_array)	
-	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
-	return noise_array
+
+for j, box in np.ndenumerate((index_array)):
+			noteSeq = []
+			for i in range(60):
+				tmp = OpenSimplex(seed=i)
+				loudness = get_Perlin_noise(index_array.shape)
+				print loudness[j], 'loudness'
+				if loudness[j] > 0:
+					noteSeq.append(Note(box, 0, 0.25, loudness[j]))
+				else:
+					noteSeq.append(Rest(0))
+			print "box", box, noteSeq
+			midi.seq_notes(noteSeq, time=0)
+midi.write("midi_output/"+outputName+".mid")
+
+
+
+
+exit()
+def make_sequence(noteSeq, row):
+	for el in row:
+		noteSeq.append(Note(el[0], el[1], el[2], el[3]))
+	return noteSeq	
+
+
+
 	
 def test_power_supply_safety(loudness):
 	for frame in range(duration):
@@ -64,6 +90,8 @@ def play_timeseries(sequence):
 				noteSeq.append(Rest(0.25))
 		midi.seq_notes(noteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
+
+
 
 	
 duration = 60
