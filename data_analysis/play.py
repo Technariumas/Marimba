@@ -38,7 +38,7 @@ def make_threshold(noise_array):
 for note in range(0, 5):
 	noteSeq = []
 	for i in range(60):
-		noteSeq.append(Note(55, 0, 0.125, 60))
+		noteSeq.append(Note(note, 0, 0.125, 60))
 		noteSeq.append(Rest(0.25))
 		print noteSeq
 		midi.seq_notes(noteSeq, time=0)
