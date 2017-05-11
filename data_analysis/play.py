@@ -41,14 +41,14 @@ for note in range(0, 4):
 	for dur in range(60):
 		tmp = OpenSimplex(seed=dur)
 		loudness = get_Perlin_noise((60, 1))
-		print note, loudness[note]
 		if (loudness[dur] > 0):
-			print loudness[dur], 'loudness'
+			#print loudness[dur], 'loudness'
 			noteSeq.append(Note(note, 0, 0.25, loudness[dur]))
 			noteSeq.append(Rest(0.5))
-		else:
+		elif (loudness[dur] == 0):
 			print "do nothing"
 			noteSeq.append(Rest(1))	
+	print noteSeq
 	midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
 
