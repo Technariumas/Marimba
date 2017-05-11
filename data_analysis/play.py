@@ -36,18 +36,17 @@ def make_threshold(noise_array):
 	return np.rint(noise_array)
 
 
-for note in range(0, 4):
+for note in range(0, 79):
 	noteSeq = []
 	for dur in range(60):
 		tmp = OpenSimplex(seed=dur)
-		loudness = get_Perlin_noise((60, 1))
-		if (loudness[dur] > 0):
+		loudness = get_Perlin_noise((60, 79))
+		if (loudness[dur, note] > 0):
 			#print loudness[dur], 'loudness'
 			noteSeq.append(Rest(0.5))
-			noteSeq.append(Note(note, 0, 0.25, loudness[dur]))
-			#noteSeq.append(Rest(0.5))
-		elif (loudness[dur] == 0):
-			print "do nothing"
+			noteSeq.append(Note(note, 0, 0.25, loudness[dur, note]))
+			noteSeq.append(Rest(0.25))
+		elif (loudness[dur, note] == 0):
 			noteSeq.append(Rest(1))	
 	print noteSeq
 	midi.seq_notes(noteSeq, time=0)
