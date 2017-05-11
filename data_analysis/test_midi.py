@@ -23,7 +23,7 @@ for i, region in enumerate([0]): #iterating over 4 notes
 		for octave in octaves:
 			noteSeq = []
 			for frame in range(60):
-				current_box = get_boxes(notes[0], 6)
+				current_box = get_boxes(notes[0], octave)
 				playing = index_array[current_box]
 				for i,play in np.ndenumerate(playing):
 					noteSeq.append(Note(play, octave, 0.125, 127))
