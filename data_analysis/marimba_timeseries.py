@@ -1,9 +1,6 @@
-from __future__ import division
-import matplotlib.pyplot as plt
-
 # -*- coding: utf-8 -*-
+from __future__ import division
 import numpy as np
-import matplotlib.pyplot as plt
 from utils import *
 from pyknon.genmidi import Midi
 from pyknon.music import Note, NoteSeq, Rest
@@ -24,8 +21,8 @@ duration = get_duration() - 1
 
 print duration, 'track duration'
 
-midi = Midi(number_tracks=1, tempo=120, instrument=11)
-testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
+midi = Midi(number_tracks=1, tempo=240, instrument=11)
+testMidi = Midi(number_tracks=1, tempo=240, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
 loudness = np.zeros((10, 8, duration), dtype=int)
@@ -81,11 +78,12 @@ def play_timeseries(sequence, loudness):
 		for j, sound in enumerate(note_sequence):
 				dur = np.random.choice([0.5, 0.5, 1, 0.25])
 				if (sound == -1):
-					noteSeq.append(Rest(0.5))
+					print "quiet"
+					#noteSeq.append(Rest(0.5))
 					#testNoteSeq.append(Rest(0.5))
 				elif note_sequence[j-1] <> -1:
 					sound = -1
-					noteSeq.append(Rest(1))
+					#noteSeq.append(Rest(1))
 					#testNoteSeq.append(Rest(0.5))
 				else:
 					noteSeq.append(Note(sound, 0, dur, volume_sequence[j]))
@@ -94,9 +92,9 @@ def play_timeseries(sequence, loudness):
 					testNote, testOctave = get_real_note_from_index(sound)
 					testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
 		midi.seq_notes(noteSeq, time=0)
-		testMidi.seq_notes(testNoteSeq, time=0)
+		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
-	testMidi.write("midi_output/"+outputName+".mid")
+	#testMidi.write("midi_output/test"+outputName+".mid")
 
 #print sequence[np.where((sequence == -1) & (loudness <> 0))]
 
@@ -110,7 +108,7 @@ def test_power_supply_safety(loudness):
 
 sequence, loudness = render_timeseries_sequence()
 
-loudness = test_power_supply_safety(loudness)
+#loudness = test_power_supply_safety(loudness)
 play_timeseries(sequence, loudness)
 
 '''
