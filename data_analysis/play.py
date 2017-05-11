@@ -41,10 +41,9 @@ for note in range(0, 79):
 	loudness = get_Perlin_noise((79, 1))
 	noteSeq = []
 	for i in range(60):
-		print loudness
 		noteSeq.append(Note(note, 0, 0.125, loudness[note]))
 		noteSeq.append(Rest(0.25))
-		print noteSeq
+	print noteSeq
 	midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
 
