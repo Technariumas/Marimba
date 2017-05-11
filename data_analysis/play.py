@@ -20,8 +20,8 @@ def make_sequence(noteSeq, row):
 	return noteSeq	
 
 def make_threshold(noise_array):
-	lower_third = np.percentile(noise_array, 33)
-	upper_third = np.percentile(noise_array, 66)
+	lower_third = np.percentile(noise_array, 50)
+	upper_third = np.percentile(noise_array, 80)
 	noise_array = np.clip(noise_array, lower_third, upper_third)
 	noise_array[np.where(noise_array == lower_third)] = 0
 	noise_array[np.where(noise_array == upper_third)] = 127
@@ -49,30 +49,22 @@ def play_timeseries(sequence):
 	index_array = np.arange(80)#range(0, 80)*np.ones((10, 8))
 	index_array = np.reshape(index_array, (8, 10)).T
 	for i, box in np.ndenumerate(index_array):
-		print box
 		noteSeq = []
-		note_sequence = sequence[i]
+		note_sequence = sequence[i] 
 		print note_sequence
 		for j, sound in enumerate(note_sequence):
-				#dur = np.random.choice([0.5, 0.5, 1, 0.25])
-				#if (sound == -1):
-					#print "quiet"
-					#noteSeq.append(Rest(0.5))
-					#testNoteSeq.append(Rest(0.5))
-				#if note_sequence[j-1] <> -1:
-				#	sound = -1
-					#noteSeq.append(Rest(1))
-					#testNoteSeq.append(Rest(0.5))
-				#else:
-				noteSeq.append(Note(box, 0, 0.125, sound))
+			#if note_sequence[j-1] <> 0:
+			#	sound = -1
+			#else:
+				print "play", box, note_sequence[j]
+				noteSeq.append(Note(box, 0, 0.25, note_sequence[j]))
 		midi.seq_notes(noteSeq, time=0)
-		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
 
 	
 duration = 60
 
-midi = Midi(number_tracks=1, tempo=120, instrument=11)
+midi = Midi(number_tracks=1, tempo=60, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
 
