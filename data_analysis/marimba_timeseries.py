@@ -1,3 +1,4 @@
+from __future__ import division
 import matplotlib.pyplot as plt
 
 # -*- coding: utf-8 -*-
@@ -17,10 +18,14 @@ note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
 durations = get_session_duration()
-durations = 0.0005*0.25*np.divide(durations, np.max(durations))
+durations = 0.25*np.divide(durations, np.max(durations))
+#print durations, np.max(durations)
 duration = get_duration() - 1
-midi = Midi(number_tracks=1, tempo=240, instrument=11)
-testMidi = Midi(number_tracks=1, tempo=240, instrument=11)
+
+print duration, 'track duration'
+
+midi = Midi(number_tracks=1, tempo=120, instrument=11)
+testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
 loudness = np.zeros((10, 8, duration), dtype=int)
@@ -74,18 +79,18 @@ def play_timeseries(sequence, loudness):
 		note_sequence = sequence[i]
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
-				dur = np.random.choice(durations)
+				dur = np.random.choice([0.5, 0.5, 1, 0.25])
 				if (sound == -1):
 					noteSeq.append(Rest(0.5))
-					testNoteSeq.append(Rest(0.5))
+					#testNoteSeq.append(Rest(0.5))
 				elif note_sequence[j-1] <> -1:
 					sound = -1
-					noteSeq.append(Rest(0.5))
-					testNoteSeq.append(Rest(0.5))
+					noteSeq.append(Rest(1))
+					#testNoteSeq.append(Rest(0.5))
 				else:
 					noteSeq.append(Note(sound, 0, dur, volume_sequence[j]))
-					noteSeq.append(Rest(0.5-dur))
-					testNoteSeq.append(Rest(0.5-dur))
+					#noteSeq.append(Rest(1-dur))
+					#testNoteSeq.append(Rest(0.5-dur))
 					testNote, testOctave = get_real_note_from_index(sound)
 					testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
 		midi.seq_notes(noteSeq, time=0)
