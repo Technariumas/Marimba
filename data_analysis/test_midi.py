@@ -28,7 +28,7 @@ for i, region in enumerate([0]): #iterating over 4 notes
 				for i,play in np.ndenumerate(playing):
 					noteSeq.append(Note(play, octave, 0.125, 127))
 					print play
-		midi.seq_notes(noteSeq, time=0)
+			midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/test_pyknon.mid")
 
 
