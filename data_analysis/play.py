@@ -36,20 +36,35 @@ def make_threshold(noise_array):
 	return np.rint(noise_array)
 
 
+for dur in range(60):
+	tmp = OpenSimplex(seed=dur)
+	for note in range(0, 4):
+		noteSeq = []
+		loudness = get_Perlin_noise((4, 1))
+		print note, loudness[note]
+		if (loudness[note] > 0):
+			print loudness[note], 'loudness'
+			noteSeq.append(Note(note, 0, 0.25, loudness[note]))
+			noteSeq.append(Rest(0.5))
+		else:
+			print "do nothing"
+			noteSeq.append(Rest(1))	
+	midi.seq_notes(noteSeq, time=0)
+midi.write("midi_output/"+outputName+".mid")
+
+		
+exit()		
+
+
+
 for note in range(65, 69):
 	noteSeq = []
 	for i in range(60):
-		tmp = OpenSimplex(seed=note)
-		loudness = get_Perlin_noise((4, 1))
-		if (loudness[note] > 0):
-			print np.random.choice(loudness), 'loudness'
+		print loudness, "loudness", loudness.shape
+		if (loudness[i] > 0):
+			print loudness[i], 'loudness'
 			noteSeq.append(Note(note, 0, 0.5, np.random.choice(loudness)))
-			#noteSeq.append(Rest(0.5))
-		else:
-			print "do nothing"
-			#noteSeq.append(Rest(1))	
-	midi.seq_notes(noteSeq, time=0)
-midi.write("midi_output/"+outputName+".mid")
+			noteSeq.append(Rest(0.5))
 
 
 exit()	
