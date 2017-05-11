@@ -64,7 +64,7 @@ class Marimba:
 		self.output.note_on(channel=self.CHANNEL_PARAM_LED_COUNT, note=id, velocity=count)
 
 	def test(self, id, velocity=127, delay=1):
-		self.play(id=id, velocity=127)
+		self.play(id=id, velocity=velocity)
 		time.sleep(delay)
 		self.stop(id=id)
 
