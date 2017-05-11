@@ -37,15 +37,13 @@ def make_threshold(noise_array):
 
 
 for note in range(65, 69):
-	print note
 	noteSeq = []
 	for i in range(60):
 		tmp = OpenSimplex(seed=note)
-		loudness = get_Perlin_noise((79, 1))
-		
+		loudness = get_Perlin_noise((4, 1))
 		if (loudness[note] > 0):
-			print loudness[note], 'loudness'
-			noteSeq.append(Note(note, 0, 0.5, loudness[i]))
+			print np.random.choice(loudness), 'loudness'
+			noteSeq.append(Note(note, 0, 0.5, np.random.choice(loudness)))
 			#noteSeq.append(Rest(0.5))
 		else:
 			print "do nothing"
