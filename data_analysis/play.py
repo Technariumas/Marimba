@@ -45,7 +45,7 @@ for j, box in np.ndenumerate((index_array)):
 				if loudness[j] > 0:
 					noteSeq.append(Note(box, 0, 0.25, loudness[j]))
 				else:
-					noteSeq.append(Rest(0))
+					noteSeq.append(Rest(0.25))
 			print "box", box, noteSeq
 			midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
