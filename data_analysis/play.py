@@ -9,7 +9,7 @@ from power_supply_spatial import *
 import sys
 
 outputName = sys.argv[1]
-midi = Midi(number_tracks=1, tempo=30, instrument=11)
+midi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 octaves = [1, 2, 3, 4]
 note_values = ["C", "D", "F", "G"]
@@ -27,7 +27,7 @@ def get_Perlin_noise(shape):
 	return noise_array
 
 def make_threshold(noise_array):
-	lower_third = np.percentile(noise_array, 50)
+	lower_third = np.percentile(noise_array, 33)
 	upper_third = np.percentile(noise_array, 80)
 	noise_array = np.clip(noise_array, lower_third, upper_third)
 	noise_array[np.where(noise_array == lower_third)] = 0
@@ -35,6 +35,16 @@ def make_threshold(noise_array):
 	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
 
+for note in range(0, 79):
+	noteSeq = []
+	for dur in range(60):
+		noteSeq.append(Rest(0.5))
+		noteSeq.append(Note(note, 0, 0.25, 60))
+	print noteSeq
+	midi.seq_notes(noteSeq, time=0)
+midi.write("midi_output/"+outputName+".mid")
+		
+exit()		
 
 for note in range(0, 79):
 	noteSeq = []
@@ -42,19 +52,16 @@ for note in range(0, 79):
 		tmp = OpenSimplex(seed=dur)
 		loudness = get_Perlin_noise((60, 79))
 		if (loudness[dur, note] > 0):
-			#print loudness[dur], 'loudness'
+			print loudness[dur], 'loudness'
 			noteSeq.append(Rest(0.5))
 			noteSeq.append(Note(note, 0, 0.25, loudness[dur, note]))
 			noteSeq.append(Rest(0.25))
 		elif (loudness[dur, note] == 0):
-			noteSeq.append(Rest(1))	
+			noteSeq.append(Rest(1))
+			print "silent"	
 	print noteSeq
 	midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
-
-		
-exit()		
-
 
 
 for note in range(65, 69):

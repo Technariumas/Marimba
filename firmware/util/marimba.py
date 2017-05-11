@@ -52,15 +52,55 @@ class Marimba:
 		self.test(id=id, velocity=127)
 
 	def setLightStep(self, id, step=12):
+		"""
+		Užduoda ledų feidinimo žingsnio dydį.
+
+		Marimba ledus gali feidinti 12 bitų dydžio vienetais. T.y. ledo ryškumo vertė gali
+		būti nuo 0 iki 4095. Kiekvieno main ciklo prasisukimo metu yra truputį įfeidinamas 
+		pirmasis ledas ir tiek pat išfeidinamas paskutinis ledas. *step* yra tas dydis, 
+		kuriuo pakinta pirmo ir paskutinio ledo ryškumas kiekvienoje iteracijoje. Main ciklas 
+		sukasi taip greitai, kaip jis gali suktis, nematavau jo ilgio mikrosekundėmis, bet tai
+		nesvarbu. Svarbu, kad didesnis *step* reiškia greitesnį ledų sukimąsi, mažesnis - 
+		lėtesnį. Žr. firmware/src/marimba/lights.h : chase() 
+
+
+		Parametrai
+		----------
+		id : [0 - 127] 
+			Dėžės numeris
+		step: [0 - 127]
+			Žingsnis
+		"""
 		self.output.note_on(channel=self.CHANNEL_PARAM_LED_STEP, note=id, velocity=step)
 
 	def setLightMinimum(self, id, minimum=15):
+		"""
+		Turėtų užduoti iki kiek ledai išsifeidina, bet realiai veikia bugovai.
+		"""
 		self.output.note_on(channel=self.CHANNEL_PARAM_LED_MINIMUM, note=id, velocity=minimum)
 
+
 	def setLightMaximum(self, id, maximum=127):
+		"""
+		Turėtų užduoti iki kiek ledai įsifeidina, bet realiai veikia bugovai.
+		"""
 		self.output.note_on(channel=self.CHANNEL_PARAM_LED_MAXIMUM, note=id, velocity=maximum)
 
 	def setLightCount(self, id, count=4):
+		"""
+		Užduoda, kiek ledų sukasi uždegti.
+		
+		Kai ledai feidinasi, tai pirmasis visada įsifeidina, o paskutinysis išsifeidina.
+		Ši funkcija užduoda, kiek ledų degančių max šviesumu yra tarp pirmojo ir paskutinio.
+
+		Parametrai
+		----------
+		id : [0 - 127] 
+			Dėžės numeris
+		step: [1 - 7]
+			Ledų skaičius
+
+		"""
 		self.output.note_on(channel=self.CHANNEL_PARAM_LED_COUNT, note=id, velocity=count)
 
 	def test(self, id, velocity=127, delay=1):
