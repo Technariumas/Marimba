@@ -53,9 +53,9 @@ def play_timeseries(sequence):
 		note_sequence = sequence[i] 
 		print note_sequence
 		for j, sound in enumerate(note_sequence):
-			#if note_sequence[j-1] <> 0:
-			#	sound = -1
-			#else:
+			if note_sequence[j-1] <> 0:
+				sound = -1
+			else:
 				print "play", box, note_sequence[j]
 				noteSeq.append(Note(box, 0, 0.25, note_sequence[j]))
 		midi.seq_notes(noteSeq, time=0)
