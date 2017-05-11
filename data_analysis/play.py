@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pyknon.genmidi import Midi
 from pyknon.music import Note, NoteSeq, Rest
-from utils import *
+#from utils import *
 from opensimplex import OpenSimplex
 from datetime import datetime, timedelta
 from marimba_config import *
@@ -35,12 +35,13 @@ def make_threshold(noise_array):
 	noise_array[np.where((noise_array <> 0) & (noise_array <> 127))] = 60
 	return np.rint(noise_array)
 
-tmp = OpenSimplex(seed=i)
-loudness = get_Perlin_noise((1, 5))
 
-for note in range(0, 5):
+for note in range(0, 79):
+	tmp = OpenSimplex(seed=note)
+	loudness = get_Perlin_noise((79, 1))
 	noteSeq = []
 	for i in range(60):
+		print loudness
 		noteSeq.append(Note(note, 0, 0.125, loudness[note]))
 		noteSeq.append(Rest(0.25))
 		print noteSeq
