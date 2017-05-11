@@ -9,7 +9,7 @@ from power_supply_spatial import *
 import sys
 
 outputName = sys.argv[1]
-midi = Midi(number_tracks=1, tempo=120, instrument=11)
+midi = Midi(number_tracks=1, tempo=30, instrument=11)
 
 octaves = [1, 2, 3, 4]
 note_values = ["C", "D", "F", "G"]
@@ -46,7 +46,7 @@ for j, box in np.ndenumerate((index_array)):
 				#if loudness[i-1] > 0:
 				#	noteSeq.append(Rest(0.5))
 				if loudness[j] > 0:
-					noteSeq.append(Note(box, 0, 0.25, loudness[j]))
+					noteSeq.append(Note(box, 0, 0.5, loudness[j]))
 					noteSeq.append(Rest(0.5))	
 				else:
 					noteSeq.append(Rest(0.5))
