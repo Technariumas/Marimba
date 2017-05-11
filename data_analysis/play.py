@@ -51,10 +51,10 @@ def play_timeseries(sequence):
 	for i, box in np.ndenumerate(index_array):
 		noteSeq = []
 		note_sequence = sequence[i] 
-		print note_sequence
 		for j, sound in enumerate(note_sequence):
 			if note_sequence[j-1] <> 0:
 				sound = -1
+				noteSeq.append(Rest(0.5))
 			else:
 				print "play", box, note_sequence[j]
 				noteSeq.append(Note(box, 0, 0.25, note_sequence[j]))
@@ -74,7 +74,10 @@ for moment in range(0, duration):
 	sequence[:, :, moment] = get_Perlin_noise(frame.shape)
 
 sequence = test_power_supply_safety(sequence)
+
 play_timeseries(sequence)
+
+print sequence
 exit()
 
 '''for row in sequence:
