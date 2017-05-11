@@ -38,14 +38,18 @@ def make_threshold(noise_array):
 
 for j, box in np.ndenumerate((index_array)):
 			noteSeq = []
+			loudnessSequence = []
 			for i in range(60):
 				tmp = OpenSimplex(seed=i)
 				loudness = get_Perlin_noise(index_array.shape)
-				print loudness[j], 'loudness'
+				print loudness[j], 'loudness', i, i-1
+				#if loudness[i-1] > 0:
+				#	noteSeq.append(Rest(0.5))
 				if loudness[j] > 0:
 					noteSeq.append(Note(box, 0, 0.25, loudness[j]))
+					noteSeq.append(Rest(0.5))	
 				else:
-					noteSeq.append(Rest(0.25))
+					noteSeq.append(Rest(0.5))
 			print "box", box, noteSeq
 			midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/"+outputName+".mid")
