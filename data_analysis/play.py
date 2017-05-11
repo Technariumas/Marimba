@@ -54,11 +54,11 @@ def play_timeseries(sequence):
 		for j, sound in enumerate(note_sequence):
 			if note_sequence[j-1] <> -1:
 				sound = -1
-				noteSeq.append(Rest(0.25))
+				#noteSeq.append(Rest(0.5))
 			else:
 				print "play", box, note_sequence[j]
 				noteSeq.append(Note(box, 0, 1, note_sequence[j]))
-				noteSeq.append(Rest(0.25))
+			noteSeq.append(Rest(0.25))
 		midi.seq_notes(noteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
 
