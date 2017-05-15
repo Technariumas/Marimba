@@ -60,16 +60,17 @@ def render_timeseries_sequence():
 		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
 		timeseries[i,:] = make_threshold(np.rint(mb)).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
-		for frame in range(duration): 
-			time_slice = timeseries[:, frame]#octave value array sliced in time
-			for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
-				if octave <> -1:
-					current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
-					sequence[current_boxes[0][0:2], current_boxes[1][0:2], frame] = index_array[current_boxes[0][0:2], current_boxes[1][0:2]] #sequence array elements that are playing at a given time slice are filled with box numbers
-					loudness[current_boxes[0][0:2], current_boxes[1][0:2], frame] = volumeseries[j,frame]
-					print "note", notes[i], "octave", octave, current_boxes[0], current_boxes[1], "boxes"
+		for frame in range(duration):
+			print timeseries[i, frame], "timeseries"
+			time_slice = timeseries[i, frame]#octave value array sliced in time
+			#for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
+			if time_slice <> -1:
+					current_boxes = get_boxes(notes[i], time_slice) #indices of boxes with a given note and octave value
+					sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
+					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
+					print "note", notes[i], "octave", time_slice, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
-			print "time: ", frame
+		print "time: ", frame			
 	return sequence, loudness
 
 def play_timeseries(sequence, loudness):
@@ -101,7 +102,7 @@ def play_timeseries(sequence, loudness):
 					#testNoteSeq.append(Rest(1.75-pauseDur))
 					#testNote, testOctave = get_real_note_from_index(sound)
 					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
-		print box, noteSeq
+		#print box, noteSeq
 		midi.seq_notes(noteSeq, time=0)
 		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
