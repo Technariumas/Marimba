@@ -62,11 +62,12 @@ def render_timeseries_sequence():
 		for frame in range(duration): 
 			time_slice = timeseries[:, frame]#octave value array sliced in time
 			for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
-				current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
-				sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
-				loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[j,frame]
-				print "note", notes[i], "octave", octave#, current_boxes[0], current_boxes[1], "boxes"
-				#print "notes, octaves", i, j
+				if octave <> -1:
+					current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
+					sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
+					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[j,frame]
+					print "note", notes[i], "octave", octave#, current_boxes[0], current_boxes[1], "boxes"
+					#print "notes, octaves", i, j
 	return sequence, loudness
 
 def play_timeseries(sequence, loudness):
@@ -86,13 +87,13 @@ def play_timeseries(sequence, loudness):
 					noteSeq.append(Rest(2))
 					#testNoteSeq.append(Rest(0.5))
 				else:
-					noteSeq.append(Rest(1))
-					print sound, 'sound'
-					noteSeq.append(Note(sound, 0, 1, 127))#volume_sequence[j]))
-					#testNoteSeq.append(Rest(0.5-0.25))
+					#noteSeq.append(Rest(0.5))
+					#print sound, 'sound'
+					noteSeq.append(Note(sound, 0, 0.25, 127))#volume_sequence[j]))
+					testNoteSeq.append(Rest(1.75))
 					#testNote, testOctave = get_real_note_from_index(sound)
 					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
-		print i, noteSeq
+		print box, noteSeq
 		midi.seq_notes(noteSeq, time=0)
 		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
