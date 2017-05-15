@@ -20,7 +20,7 @@ notes = [0, 2, 5, 7]
 durations = get_session_duration()
 durations = 0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
-midi = Midi(number_tracks=1, tempo=120, instrument=11)
+midi = Midi(number_tracks=1, tempo=240, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
@@ -91,10 +91,9 @@ def play_timeseries(sequence, loudness):
 					#testNoteSeq.append(Rest(0.5))
 				else:
 					#noteSeq.append(Rest(0.5))
-					#print sound, 'sound'
 					pauseDur = (box)*0.003
 					testNoteSeq.append(Rest(pauseDur))
-					noteDur = 0.25+(box)*0.003
+					noteDur = 0.125+(box)*0.003
 					currentNote = Note(sound, 0, noteDur, 127)
 					noteSeq.append(currentNote)#volume_sequence[j]))
 					noteSeq.append(Rest(1 - (noteDur+pauseDur)))
