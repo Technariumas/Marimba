@@ -64,10 +64,11 @@ def render_timeseries_sequence():
 			for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
 				if octave <> -1:
 					current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
-					sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
-					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[j,frame]
-					print "note", notes[i], "octave", octave#, current_boxes[0], current_boxes[1], "boxes"
+					sequence[current_boxes[0][0], current_boxes[1][0], frame] = index_array[current_boxes[0][0], current_boxes[1][0]] #sequence array elements that are playing at a given time slice are filled with box numbers
+					loudness[current_boxes[0][0], current_boxes[1][0], frame] = volumeseries[j,frame]
+					print "note", notes[i], "octave", octave, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
+		print "time: ", frame			
 	return sequence, loudness
 
 def play_timeseries(sequence, loudness):
@@ -95,11 +96,11 @@ def play_timeseries(sequence, loudness):
 					currentNote = Note(sound, 0, noteDur, 127)
 					noteSeq.append(currentNote)#volume_sequence[j]))
 					noteSeq.append(Rest(1 - (noteDur+pauseDur)))
-					print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
+					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
 					#testNoteSeq.append(Rest(1.75-pauseDur))
 					#testNote, testOctave = get_real_note_from_index(sound)
 					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
-		print box, noteSeq
+		#print box, noteSeq
 		midi.seq_notes(noteSeq, time=0)
 		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
@@ -113,13 +114,16 @@ def test_power_supply_safety(loudness):
 		for group in range(1, 11): #iterating over all groups
 			group_indices = return_current_power_supply_group_indices(group)
 			if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
+				print "clipping", np.where(loudness[:,:, frame] >= 127)[0].shape
 				loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
 	return loudness			
 
 sequence, loudness = render_timeseries_sequence()
 loudness = test_power_supply_safety(loudness)
-#for frame in range(duration):
-#	print sequence[:,:,frame]
+
+for frame in range(duration):
+	print frame, "played notes", "loudness:", np.where(loudness[:,:,frame] > 0)[0].shape, loudness[:,:,frame][np.where(loudness[:,:,frame] > 0)], np.where(sequence[:,:,frame] > -1)[0].shape
+	
 play_timeseries(sequence, loudness)
 
 '''
