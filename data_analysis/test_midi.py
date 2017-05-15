@@ -27,6 +27,7 @@ for i, region in enumerate([1, 2, 3, 4]): #iterating over 4 notes
 					playing = index_array[current_box]
 					print "time:", frame, playing, "current_box", current_box
 					for box in playing:
+						noteSeq.append(Rest(0.5))
 						noteSeq.append(Note(box, 0, 0.25, 60))
 				print noteSeq
 				midi.seq_notes(noteSeq, time=0)
