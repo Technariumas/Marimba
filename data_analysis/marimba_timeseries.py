@@ -54,6 +54,7 @@ def render_timeseries_sequence():
 	volumeseries = np.zeros((4, duration), dtype=int) #array storing volume of each region (volume depends on session count)
 	for i, region in enumerate([1, 2, 3, 4]): #iterating over 4 notes
 		timestamps = get_unique_times_start(region)
+		print i, "changing region"
 		mb = mb_per_second_in_region(region)
 		sessions = get_session_count(region)
 		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
@@ -64,11 +65,11 @@ def render_timeseries_sequence():
 			for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
 				if octave <> -1:
 					current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
-					sequence[current_boxes[0][0], current_boxes[1][0], frame] = index_array[current_boxes[0][0], current_boxes[1][0]] #sequence array elements that are playing at a given time slice are filled with box numbers
-					loudness[current_boxes[0][0], current_boxes[1][0], frame] = volumeseries[j,frame]
+					sequence[current_boxes[0][0:2], current_boxes[1][0:2], frame] = index_array[current_boxes[0][0:2], current_boxes[1][0:2]] #sequence array elements that are playing at a given time slice are filled with box numbers
+					loudness[current_boxes[0][0:2], current_boxes[1][0:2], frame] = volumeseries[j,frame]
 					print "note", notes[i], "octave", octave, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
-		print "time: ", frame			
+			print "time: ", frame
 	return sequence, loudness
 
 def play_timeseries(sequence, loudness):
@@ -90,9 +91,9 @@ def play_timeseries(sequence, loudness):
 				else:
 					#noteSeq.append(Rest(0.5))
 					#print sound, 'sound'
-					pauseDur = (box)*0.004
+					pauseDur = (box)*0.003
 					testNoteSeq.append(Rest(pauseDur))
-					noteDur = 0.25+(box)*0.004
+					noteDur = 0.25+(box)*0.003
 					currentNote = Note(sound, 0, noteDur, 127)
 					noteSeq.append(currentNote)#volume_sequence[j]))
 					noteSeq.append(Rest(1 - (noteDur+pauseDur)))
@@ -100,7 +101,7 @@ def play_timeseries(sequence, loudness):
 					#testNoteSeq.append(Rest(1.75-pauseDur))
 					#testNote, testOctave = get_real_note_from_index(sound)
 					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
-		#print box, noteSeq
+		print box, noteSeq
 		midi.seq_notes(noteSeq, time=0)
 		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
