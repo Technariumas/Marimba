@@ -19,16 +19,13 @@ noteSeq = []
 #for t in range(0, 80):
 #	noteSeq.append(Note(t, 0, 0.125, 127))
 
-for i, region in enumerate([0]): #iterating over 4 notes
-		for octave in octaves:
-			noteSeq = []
-			for frame in range(60):
-				current_box = get_boxes(notes[0], octave)
-				playing = index_array[current_box]
-				for i,play in np.ndenumerate(playing):
-					noteSeq.append(Note(play, octave, 0.125, 127))
-					print play
-			midi.seq_notes(noteSeq, time=0)
+for i, region in enumerate([1, 2, 3, 4]): #iterating over 4 notes
+			for j, octave in enumerate(octaves): #iterating over 4*4 frames (setting octave values)
+				for frame in range(60): 
+					current_box = get_boxes(notes[i], octave)
+					playing = index_array[current_box]
+					print "time:", frame, playing, "current_box", current_box
+				midi.seq_notes(noteSeq, time=0)
 midi.write("midi_output/test_pyknon.mid")
 
 
