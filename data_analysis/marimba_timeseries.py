@@ -20,7 +20,7 @@ notes = [0, 2, 5, 7]
 durations = get_session_duration()
 durations = 0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
-midi = Midi(number_tracks=80, tempo=120, instrument=11)
+midi = Midi(number_tracks=1, tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
@@ -65,12 +65,13 @@ def render_timeseries_sequence():
 				current_boxes = get_boxes(notes[i], octave) #indices of boxes with a given note and octave value
 				sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
 				loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[j,frame]
+				print "note", notes[i], "octave", octave#, current_boxes[0], current_boxes[1], "boxes"
 				#print "notes, octaves", i, j
 	return sequence, loudness
 
 def play_timeseries(sequence, loudness):
 	for i, box in np.ndenumerate(index_array):
-		print i, box, index_array[i]
+		#print i, box, index_array[i]
 		noteSeq = []
 		testNoteSeq = []
 		note_sequence = sequence[i]
@@ -86,11 +87,12 @@ def play_timeseries(sequence, loudness):
 					#testNoteSeq.append(Rest(0.5))
 				else:
 					noteSeq.append(Rest(0.25))
-					noteSeq.append(Note(sound, 0, 0.25, volume_sequence[j]))
+					noteSeq.append(Note(sound, 0, 0.25, 127))#volume_sequence[j]))
 					#testNoteSeq.append(Rest(0.5-0.25))
 					#testNote, testOctave = get_real_note_from_index(sound)
 					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
-		midi.seq_notes(noteSeq, track = box, time=0)
+		print i, noteSeq
+		midi.seq_notes(noteSeq, time=0)
 		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
 	#testMidi.write("midi_output/"+outputName+".mid")
@@ -108,8 +110,8 @@ def test_power_supply_safety(loudness):
 
 sequence, loudness = render_timeseries_sequence()
 loudness = test_power_supply_safety(loudness)
-for frame in range(duration):
-	print sequence[:,:,frame]
+#for frame in range(duration):
+#	print sequence[:,:,frame]
 play_timeseries(sequence, loudness)
 
 '''
