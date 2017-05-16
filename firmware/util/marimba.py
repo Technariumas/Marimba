@@ -116,4 +116,4 @@ class Marimba:
 			time.sleep(duration)
 		for note in notes:
 			self.stop(id=note)
-		time.sleep(duration)
+		time.sleep(delay)
