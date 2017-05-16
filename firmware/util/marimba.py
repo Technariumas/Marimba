@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-
-
-
 import pygame.midi
 import time
 
@@ -117,7 +113,7 @@ class Marimba:
 	def playSequence(self, notes, delay, duration):
 		for note in notes:
 			self.play(id=note, velocity=127)
-			time.sleep(delay)
-		time.sleep(duration)
+			time.sleep(duration)
 		for note in notes:
 			self.stop(id=note)
+		time.sleep(duration)
