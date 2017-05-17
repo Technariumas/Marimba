@@ -110,7 +110,7 @@ def play_timeseries(sequence, loudness):
 				else:
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
-					if (j in highest_notes) or (j in lowest_notes):
+					if False:#(j in highest_notes) or (j in lowest_notes):
 						print "rhytmic boxes"
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						if j in highest_notes:
@@ -132,8 +132,6 @@ def play_timeseries(sequence, loudness):
 						else:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							time_on = (j%8)*0.5#4*(j % 8)*0.125/2
-							#currentNote2 = Note(sound, 0, dur, volume_sequence[j])
-							#time_on2 = time_on+2#4*(j % 8)*0.125/2
 							#if time_on in [0, 0.5, 1, 1.5, 2]:
 							#	time_on+= 0.125/2
 							#print time_on, "time", j
