@@ -72,6 +72,18 @@ def render_timeseries_sequence():
 					#print "notes, octaves", i, j
 		print "time: ", frame			
 	return sequence, loudness
+'''
+def get_lowest_notes():
+	box_list = []
+	for tone in [0, 2, 5, 7]:
+		for octave in [3, 4]:
+			boxes = get_boxes(tone, octave)
+			box_list.append(boxes)
+	return box_list
+
+print get_lowest_notes()
+exit()
+'''
 
 def play_timeseries(sequence, loudness):
 	for i, box in np.ndenumerate(index_array):
@@ -84,29 +96,27 @@ def play_timeseries(sequence, loudness):
 				dur = np.random.choice([1, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
 				if (sound == -1):
 					noteSeq.append(Rest(1))
-					#testNoteSeq.append(Rest(0.5))
 				#elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
 				#	sound = -1
 				#	noteSeq.append(Rest(1))
-					#testNoteSeq.append(Rest(0.5))
 				else:
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
-					if j%3 == 1:
+					if j in lowest_notes:
 						noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (sound % 4)+0.125
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur+0.125)))
 					else:
-						if j%3 == 0:
+						if j%2 == 0:
 							noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							time_on = (sound % 4)
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 						else:
-							print j%3, "offbeat"
+							print j%1, "offbeat"
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							time_on = sound % 5
 							noteSeq.append(currentNote)#volume_sequence[j]))
