@@ -127,9 +127,9 @@ def play_timeseries(sequence, loudness):
 					region_notes = region_notes + rn
 				for rn in region_notes[0:5]:
 					print "adding"
-					currentNote = Note(rn, 0, 1/32, 127)
+					currentNote = Note(rn, 0, 0.08333/2, 127)
 					noteSeq.append(currentNote)
-				note_duration = 1/32*4#len(region_notes)
+				note_duration = 4*(0.08333/2)#len(region_notes)
 				noteSeq.append(Rest(1-note_duration))
 			else:
 					if j in highest_notes:
