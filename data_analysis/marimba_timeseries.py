@@ -77,15 +77,20 @@ def render_timeseries_sequence():
 def get_lowest_notes():
 	box_list = []
 	for tone in [0, 2, 5, 7]:
-		for octave in [3, 4]:
-			boxes = get_boxes(tone, octave)
+		for octave in [5, 6]:
+			boxes = index_array[get_boxes(tone, octave)]
 			box_list.append(boxes.tolist())
 	return box_list
 
-#print get_lowest_notes()[0:27]
+highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43,70, 2]
+
+
+#print get_lowest_notes()
 #exit()
 
-lowest_notes = [61, 73, 54, 65, 39, 62, 14, 76, 27, 68, 60, 71, 35, 16, 58, 10, 31, 51, 63, 75, 0, 50, 11, 23, 36, 30, 52, 3, 37, 18, 53, 44, 46, 67, 49, 40, 33, 5, 26, 59]
+lowest_notes = [61, 73, 54, 65, 39, 62, 14, 76, 27, 68, 60, 71, 35, 16, 58]
+
+rhythm_notes = lowest_notes+highest_notes
 
 
 def play_timeseries(sequence, loudness):
@@ -105,7 +110,7 @@ def play_timeseries(sequence, loudness):
 				else:
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
-					if j%3 in lowest_notes:
+					if j%3 in rhythm_notes:
 						noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (sound % 4)+0.125
