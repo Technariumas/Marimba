@@ -76,8 +76,8 @@ def render_timeseries_sequence():
 
 def get_lowest_notes():
 	box_list = []
-	for tone in [2]:
-		for octave in [6]:
+	for tone in [7]:
+		for octave in [3]:
 			boxes = index_array[get_boxes(tone, octave)]
 			box_list.append(boxes.tolist())
 	return box_list
@@ -85,18 +85,14 @@ def get_lowest_notes():
 highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43, 70, 2]
 
 #print get_lowest_notes()
-#exit()
 
-
-lowest_notes = [61, 73, 54, 65, 39, 60, 35, 16, 58, 0, 50, 11, 23, 36, 53, 44, 46, 67, 49, 62, 14, 76, 27, 68, 10, 31, 51, 63, 75, 30, 52, 3, 37, 18, 40, 33, 5, 26, 59]
+lowest_notes = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 44, 46, 67, 49, 62, 14, 76, 27, 68, 10, 31, 51, 63, 75, 30, 52, 3, 37, 18, 40, 33, 5, 26, 59]
 
 rhythm_notes = lowest_notes+highest_notes
 
 lowest_octave = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 44, 46, 67, 49]
 lowest_F = [0, 50, 11, 23, 36]
 lowest_G = [53, 44, 46, 67, 49]
-fast_boxes = [32, 72, 7, 69]
-
 
 def play_timeseries(sequence, loudness):
 	for i, box in np.ndenumerate(index_array):
