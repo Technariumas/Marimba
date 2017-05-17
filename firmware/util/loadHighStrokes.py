@@ -10,4 +10,4 @@ try:
 except EOFError:
 	highStroke = [17] * 80
 print ("Loading HIGH stroke strengths:")
-print ([(m.setHighStrokeLength(n, highStroke[n]), n, highStroke[n]) for n in range(80)])
+print ([(m.setHighStrokeLength(n, highStroke[n], test=False), n, highStroke[n]) for n in range(80)])
