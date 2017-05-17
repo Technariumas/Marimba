@@ -81,7 +81,7 @@ def play_timeseries(sequence, loudness):
 		note_sequence = sequence[i]
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
-				dur = np.random.choice(durations)
+				dur = np.random.choice([0.5, 0.25, 0.25, 0.25, 0.25])
 				if (sound == -1):
 					noteSeq.append(Rest(1))
 					#testNoteSeq.append(Rest(0.5))
@@ -93,8 +93,8 @@ def play_timeseries(sequence, loudness):
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
 					testNoteSeq.append(Rest(pauseDur))
-					noteDur = 0.125#+(box)*0.003
-					currentNote = Note(sound, 0, noteDur, volume_sequence[j])
+					noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16
+					currentNote = Note(sound, 0, dur, volume_sequence[j])
 					time_on = (sound % 8)/2
 					noteSeq.append(currentNote)#volume_sequence[j]))
 					noteSeq.append(Rest(1 - (noteDur+pauseDur)))
