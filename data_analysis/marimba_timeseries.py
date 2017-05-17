@@ -85,23 +85,22 @@ def play_timeseries(sequence, loudness):
 				if (sound == -1):
 					noteSeq.append(Rest(1))
 					#testNoteSeq.append(Rest(0.5))
-				elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
-					sound = -1
-					noteSeq.append(Rest(1))
+				#elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
+				#	sound = -1
+				#	noteSeq.append(Rest(1))
 					#testNoteSeq.append(Rest(0.5))
 				else:
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
 					if j%4 <> 0:
-						testNoteSeq.append(Rest(pauseDur))
-						noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16
+						noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (sound % 4)
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					else:
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
-						time_on = sound % 3
+						time_on = sound % 5
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
