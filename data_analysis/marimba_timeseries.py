@@ -101,17 +101,17 @@ def play_timeseries(sequence, loudness):
 		note_sequence = sequence[i]
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
-				if i in lowest_octave:
+			if box in lowest_octave:
+					print box, "lowest octave"
 					dur = 2
-				else:
+			else:
 					dur = 1#np.random.choice([1, 1])#], 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
-				if (sound == -1):
+			if (sound == -1):
 					noteSeq.append(Rest(1))
-				elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
-					print "quiet"
+			elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
 					sound = -1
 					noteSeq.append(Rest(1))
-				else:
+			else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
 					elif j in lowest_notes:
