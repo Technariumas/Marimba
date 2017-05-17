@@ -8,7 +8,7 @@ try:
 	with open('midStroke', 'rb') as fp:
 		midStroke = pickle.load(fp)
 except EOFError:
-	midStroke = [17] * 80
+	midStroke = [60] * 80
 
 for n in range(80):
 	print("Dabartine jega: " + str(midStroke[n]))
@@ -20,7 +20,7 @@ for n in range(80):
 				pickle.dump(midStroke, fp)
 			break
 		else:
-			val = raw_input("Ivesk smugio jega [0 - 127] gera pradzia - 17:")
+			val = raw_input("Ivesk smugio jega [0 - 127] gera pradzia - 60:")
 			try:
 				i = int(val)
 				if i >= 0 and i <= 127:
