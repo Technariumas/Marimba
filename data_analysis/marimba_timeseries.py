@@ -125,10 +125,6 @@ def play_timeseries(sequence, loudness):
 							time_on = sound % 5
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
-							currentNote = Note(sound, 0, dur, volume_sequence[j])
-							time_on = sound % 5
-							noteSeq.append(currentNote)#volume_sequence[j]))
-							noteSeq.append(Rest(1 - (dur+pauseDur)))
 						else:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							time_on = (j % 16)*0.125/2
