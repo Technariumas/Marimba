@@ -82,8 +82,7 @@ def get_lowest_notes():
 			box_list.append(boxes.tolist())
 	return box_list
 
-highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43,70, 2]
-
+highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43, 70, 2]
 
 #print get_lowest_notes()
 #exit()
@@ -114,14 +113,16 @@ def play_timeseries(sequence, loudness):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						if j in highest_notes:
 							volume_sequence[j] = 60
+						elif j in lowest_notes:
+							volume_sequence[j] = 127	
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
-						time_on = (sound % 4)+0.125
+						time_on = (sound % 4)						
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur+0.125)))
 					else:
 						if j%2 == 0:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
-							time_on = (sound % 4)
+							time_on = (sound % 4)+0.125
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 						else:
