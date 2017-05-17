@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from marimba import Marimba
-from marimba import randrange
+from random import randrange
 from time import sleep
 
 m = Marimba()
