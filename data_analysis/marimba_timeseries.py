@@ -92,8 +92,7 @@ def play_timeseries(sequence, loudness):
 				else:
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
-					
-					if frame%2 <> 0:
+					if j%4 <> 0:
 						testNoteSeq.append(Rest(pauseDur))
 						noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
@@ -102,9 +101,7 @@ def play_timeseries(sequence, loudness):
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					else:
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
-						time_on = sound % 4+0.125
-						print time_on
-						noteSeq.append(Rest(1 - (dur+pauseDur)))
+						time_on = sound % 3
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
