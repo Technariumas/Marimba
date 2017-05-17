@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import pickle
 from marimba import Marimba
 m=Marimba()
@@ -23,6 +24,7 @@ for n in range(80):
 			try:
 				i = int(val)
 				if i >= 0 and i <= 127:
+					highStroke[n] = i
 					m.setHighStrokeLength(n, i)
 			except ValueError:
 				print("Vesk tik skaicius!")
