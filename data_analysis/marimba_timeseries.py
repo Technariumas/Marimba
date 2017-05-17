@@ -121,11 +121,6 @@ def play_timeseries(sequence, loudness):
 					sound = -1
 					noteSeq.append(Rest(1))
 			else:
-				if j%8 == 0:
-						noteSeq.append(Note(32, 0, 0.125, 127))#volume_sequence[j]))
-						noteSeq.append(Note(69, 0, 0.125, 127))
-						noteSeq.append(Note(72, 0, 0.125, 127))
-				else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
 					elif j in lowest_notes:
