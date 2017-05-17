@@ -131,7 +131,6 @@ def play_timeseries(sequence, loudness):
 					noteSeq.append(currentNote)
 				note_duration = 1/32*4#len(region_notes)
 				noteSeq.append(Rest(1-note_duration))
-				exit()	
 			else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
