@@ -77,7 +77,7 @@ def render_timeseries_sequence():
 def get_lowest_notes():
 	box_list = []
 	for tone in [0, 2, 5, 7]:
-		for octave in [5, 6]:
+		for octave in [4]:
 			boxes = index_array[get_boxes(tone, octave)]
 			box_list.append(boxes.tolist())
 	return box_list
@@ -87,7 +87,7 @@ highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43, 70, 2]
 #print get_lowest_notes()
 #exit()
 
-lowest_notes = [61, 73, 54, 65, 39, 62, 14, 76, 27, 68, 60, 71, 35, 16, 58]
+lowest_notes = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 44, 46, 67, 49, 62, 14, 76, 27, 68, 10, 31, 51, 63, 75, 30, 52, 3, 37, 18, 40, 33, 5, 26, 59]
 
 rhythm_notes = lowest_notes+highest_notes
 
@@ -107,14 +107,14 @@ def play_timeseries(sequence, loudness):
 					sound = -1
 					noteSeq.append(Rest(1))
 				else:
+					if j in highest_notes:
+							volume_sequence[j] = 60
+					elif j in lowest_notes:
+							volume_sequence[j] = 127	
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
 					if (j%3 == 0) or (j%3 == 1):#(j in highest_notes) or (j in lowest_notes):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
-						if j in highest_notes:
-							volume_sequence[j] = 60
-						elif j in lowest_notes:
-							volume_sequence[j] = 127	
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (sound % 16)						
 						noteSeq.append(currentNote)#volume_sequence[j]))
