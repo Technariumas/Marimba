@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pygame.midi
 import time
 
@@ -104,14 +106,14 @@ class Marimba:
 		self.output.note_on(channel=self.CHANNEL_PARAM_LED_COUNT, note=id, velocity=count)
 
 	def test(self, id, velocity=127, delay=1):
-		self.play(id=id, velocity=127)
+		self.play(id=id, velocity=velocity)
 		time.sleep(delay)
 		self.stop(id=id)
 
 	def playSequence(self, notes, delay, duration):
 		for note in notes:
 			self.play(id=note, velocity=127)
-			time.sleep(delay)
-		time.sleep(duration)
+			time.sleep(duration)
 		for note in notes:
 			self.stop(id=note)
+		time.sleep(delay)
