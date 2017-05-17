@@ -122,12 +122,13 @@ def play_timeseries(sequence, loudness):
 			elif j%32 == 0:
 				region_notes = []
 				for octave in [3, 4, 5, 6]:
-					rn = index_array[get_boxes(0, octave)][0:8].tolist()
+					rn = index_array[get_boxes(0, octave)].tolist()
 					region_notes = region_notes + rn
 				for rn in region_notes:
-					currentNote = Note(rn, 0, 0.067, 127)
+					currentNote = Note(rn, 0, 0.09375/2, 127)
 					noteSeq.append(currentNote)
-				noteSeq.append(Rest(1-5*0.067))
+				note_duration = 0.067*len(region_notes)
+				noteSeq.append(Rest(1-note_duration))
 			
 			else:
 					if j in highest_notes:
