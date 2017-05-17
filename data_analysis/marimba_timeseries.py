@@ -120,16 +120,18 @@ def play_timeseries(sequence, loudness):
 			elif (j%30 == 0) or (j%31 ==0):
 				noteSeq.append(Rest(1))
 			elif j%32 == 0:
+				print "32"
 				region_notes = []
 				for octave in [3, 4, 5, 6]:
 					rn = index_array[get_boxes(0, octave)].tolist()
 					region_notes = region_notes + rn
-				for rn in region_notes:
-					currentNote = Note(rn, 0, 0.041667/2, 127)
+				for rn in region_notes[0:5]:
+					print "adding"
+					currentNote = Note(rn, 0, 1/32, 127)
 					noteSeq.append(currentNote)
-				note_duration = 0.067*len(region_notes)
+				note_duration = 1/32*4#len(region_notes)
 				noteSeq.append(Rest(1-note_duration))
-			
+				exit()	
 			else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
