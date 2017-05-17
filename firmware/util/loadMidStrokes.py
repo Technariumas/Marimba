@@ -5,7 +5,7 @@ m=Marimba()
 m.connect()
 
 try:
-	with open('midStroke', 'rb') as fp:
+	with open('/home/pi/Marimba/firmware/util/midStroke', 'rb') as fp:
 		midStroke = pickle.load(fp)
 except Exception:
 	midStroke = [17] * 80
