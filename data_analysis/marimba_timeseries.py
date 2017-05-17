@@ -111,23 +111,24 @@ def play_timeseries(sequence, loudness):
 					dur = 1
 			else:
 					dur = 1#np.random.choice([1, 1])#], 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
-			if (j%30 == 0) or (j%31 ==0):
-				noteSeq.append(Rest(1))
-			if j%32 == 0:
-				region_notes = []
-				for octave in [3, 4, 5, 6]:
-					rn = index_array[get_boxes(0, octave)].tolist()
-					region_notes = region_notes + rn
-				for rn in region_notes:
-					currentNote = Note(rn, 0, 0.067, 127)
-					noteSeq.append(currentNote)
-				noteSeq.append(Rest(1-5*0.067))
-						
 			if (sound == -1):
 					noteSeq.append(Rest(1))
 			elif (note_sequence[j-1] <> -1):# or (note_sequence[j-2] <> -1):
 					sound = -1
 					noteSeq.append(Rest(1))
+					
+			elif (j%30 == 0) or (j%31 ==0):
+				noteSeq.append(Rest(1))
+			elif j%32 == 0:
+				region_notes = []
+				for octave in [3, 4, 5, 6]:
+					rn = index_array[get_boxes(0, octave)][0:8].tolist()
+					region_notes = region_notes + rn
+				for rn in region_notes:
+					currentNote = Note(rn, 0, 0.067, 127)
+					noteSeq.append(currentNote)
+				noteSeq.append(Rest(1-5*0.067))
+			
 			else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
