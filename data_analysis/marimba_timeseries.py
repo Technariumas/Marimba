@@ -77,7 +77,7 @@ def render_timeseries_sequence():
 def get_lowest_notes():
 	box_list = []
 	for tone in [0, 2, 5, 7]:
-		for octave in [4]:
+		for octave in [3]:
 			boxes = index_array[get_boxes(tone, octave)]
 			box_list.append(boxes.tolist())
 	return box_list
@@ -91,6 +91,7 @@ lowest_notes = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 4
 
 rhythm_notes = lowest_notes+highest_notes
 
+lowest_octave = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 44, 46, 67, 49]
 
 def play_timeseries(sequence, loudness):
 	for i, box in np.ndenumerate(index_array):
@@ -100,10 +101,14 @@ def play_timeseries(sequence, loudness):
 		note_sequence = sequence[i]
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
-				dur = np.random.choice([1, 1])#], 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
+				if i in lowest_octave:
+					dur = 2
+				else:
+					dur = 1#np.random.choice([1, 1])#], 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
 				if (sound == -1):
 					noteSeq.append(Rest(1))
 				elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
+					print "quiet"
 					sound = -1
 					noteSeq.append(Rest(1))
 				else:
