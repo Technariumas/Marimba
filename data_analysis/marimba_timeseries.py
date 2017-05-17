@@ -82,12 +82,12 @@ def get_lowest_notes():
 			box_list.append(boxes.tolist())
 	return box_list
 
-highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43, 70, 2]
+highest_notes = [21, 45,  12, 1, 24, 32, 7, 69, 20, 43]#, 70, 2]
 
 #print get_lowest_notes()
 #exit()
 
-lowest_notes = [61, 73, 54, 65, 39, 62, 14, 76, 27, 68, 60, 71, 35, 16, 58]
+lowest_notes = [61, 73, 54, 65, 39, 62, 14, 76, 27, 68]#, 60, 71, 35, 16, 58]
 
 rhythm_notes = lowest_notes+highest_notes
 
@@ -120,7 +120,16 @@ def play_timeseries(sequence, loudness):
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					else:
-						if j%2 == 0:
+						if j%4 == 0:
+							currentNote = Note(sound, 0, dur, volume_sequence[j])
+							time_on = sound % 5
+							noteSeq.append(currentNote)#volume_sequence[j]))
+							noteSeq.append(Rest(1 - (dur+pauseDur)))
+							currentNote = Note(sound, 0, dur, volume_sequence[j])
+							time_on = sound % 5
+							noteSeq.append(currentNote)#volume_sequence[j]))
+							noteSeq.append(Rest(1 - (dur+pauseDur)))
+						else:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							time_on = (j % 16)*0.125/2
 							print time_on, "time", j % 16
@@ -128,11 +137,8 @@ def play_timeseries(sequence, loudness):
 								time_on+= 0.125/2
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
-						else:
-							currentNote = Note(sound, 0, dur, volume_sequence[j])
-							time_on = sound % 5
-							noteSeq.append(currentNote)#volume_sequence[j]))
-							noteSeq.append(Rest(1 - (dur+pauseDur)))
+
+
 					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
 					#testNoteSeq.append(Rest(1.75-pauseDur))
 					#testNote, testOctave = get_real_note_from_index(sound)
