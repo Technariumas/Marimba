@@ -128,7 +128,7 @@ def play_timeseries(sequence, loudness):
 						else:
 							print j%1, "offbeat"
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
-							time_on = sound % 5
+							time_on = (sound % 3)*1.3
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
