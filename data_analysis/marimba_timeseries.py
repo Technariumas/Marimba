@@ -100,7 +100,7 @@ def play_timeseries(sequence, loudness):
 		note_sequence = sequence[i]
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
-				dur = np.random.choice([0.5, 0.5])#], 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
+				dur = np.random.choice([0.25, 0.25])#], 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375])
 				if (sound == -1):
 					noteSeq.append(Rest(1))
 				elif (note_sequence[j-1] <> -1) or (note_sequence[j-2] <> -1):
@@ -109,7 +109,7 @@ def play_timeseries(sequence, loudness):
 				else:
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
-					if (j in highest_notes) or (j in lowest_notes):
+					if (j%3 == 0) or (j%3 == 1):#(j in highest_notes) or (j in lowest_notes):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						if j in highest_notes:
 							volume_sequence[j] = 60
@@ -118,20 +118,25 @@ def play_timeseries(sequence, loudness):
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (sound % 4)						
 						noteSeq.append(currentNote)#volume_sequence[j]))
-						noteSeq.append(Rest(1 - (dur+pauseDur)))
+						noteSeq.append(Rest(0.5 - (dur+pauseDur)))
+						noteSeq.append(currentNote)
+						noteSeq.append(Rest(0.5 - (dur+pauseDur)))
+
 					else:
-						if j%4 == 0:
+						if j%2 == 1:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							time_on = (sound % 6)*(1.333/2)
 							noteSeq.append(currentNote)#volume_sequence[j]))
-							noteSeq.append(Rest(1 - (dur+pauseDur)))
-							
-						else:
-							currentNote = Note(sound, 0, dur, volume_sequence[j])
-							time_on = (sound % 4)+0.5
-							noteSeq.append(currentNote)#volume_sequence[j]))
-							noteSeq.append(Rest(1 - (dur+pauseDur)))
-					
+							noteSeq.append(Rest(0.5 - (dur+pauseDur)))
+							noteSeq.append(currentNote)
+							noteSeq.append(Rest(0.5 - (dur+pauseDur)))
+
+						#else:
+						#	currentNote = Note(sound, 0, dur, volume_sequence[j])
+						#	time_on = (sound % 4)+0.5
+						#	noteSeq.append(currentNote)#volume_sequence[j]))
+						#	noteSeq.append(Rest(0.5 - (dur+pauseDur)))
+
 					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
 					#testNoteSeq.append(Rest(1.75-pauseDur))
 					#testNote, testOctave = get_real_note_from_index(sound)
