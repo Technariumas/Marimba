@@ -96,6 +96,7 @@ lowest_F = [0, 50, 11, 23, 36]
 lowest_G = [53, 44, 46, 67, 49]
 
 def play_timeseries(sequence, loudness):
+	frame_counter = np.zeros((duration))
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
@@ -104,7 +105,6 @@ def play_timeseries(sequence, loudness):
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
 			if box in lowest_octave:
-					print box, "lowest octave"
 					dur = 2
 			elif box in lowest_F:
 					dur = 1.5
@@ -120,21 +120,23 @@ def play_timeseries(sequence, loudness):
 			elif (j%6 == 0) or (j%7 ==0):
 				noteSeq.append(Rest(1))
 			elif j%8 == 0:
-				print "32"
+				print "32", box
 				region_notes = []
-				for octave in random.sample([3, 4, 5, 6], 1):
-					rn = index_array[get_boxes(0, octave)].tolist()
-					region_notes = region_notes + rn
-				if octave%2 == 0:
-					region_list = region_notes[0:4]	
-				else:
-					region_list = region_notes[0:4][::-1]
-				for rn in region_list:
-					print "adding"
-					currentNote = Note(rn, 0, 0.16667/2, 127)
-					noteSeq.append(currentNote)
-				note_duration = 4*(0.16667/2)#len(region_notes)
-				noteSeq.append(Rest(1-note_duration))
+				if frame_counter[j] == 0:
+					for octave in random.sample([3, 4, 5, 6], 1):
+						rn = index_array[get_boxes(0, octave)].tolist()
+						region_notes = region_notes + rn
+					if octave%2 == 0:
+						region_list = region_notes[0:4]	
+					else:
+						region_list = region_notes[0:4][::-1]
+					for rn in region_list:
+						print "adding", len(region_list)
+						currentNote = Note(rn, 0, 0.16667/2, 127)
+						noteSeq.append(currentNote)
+					note_duration = 4*(0.16667/2)#len(region_notes)
+					noteSeq.append(Rest(1-note_duration))
+					frame_counter[j] = j
 			else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
