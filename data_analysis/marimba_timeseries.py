@@ -120,10 +120,10 @@ def play_timeseries(sequence, loudness):
 			#elif (j%14 == 0):
 			#	if frame_counter[j+2] == 0:
 			#		noteSeq.append(Rest(1))
-			elif (j%15 == 0):
+			elif (j%31 == 0):
 				if frame_counter[j+1] == 0:
 					noteSeq.append(Rest(1))
-			elif j%16 == 0:
+			elif j%32 == 0:
 				print "32", box
 				region_notes = []
 				if frame_counter[j] == 0:
