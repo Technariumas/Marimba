@@ -125,9 +125,9 @@ def play_timeseries(sequence, loudness):
 					rn = index_array[get_boxes(0, octave)].tolist()
 					region_notes = region_notes + rn
 				if box%2 == 0:
-					region_list = region_notes[0:5]	
+					region_list = region_notes[0:4]	
 				else:
-					region_list = region_notes[0:5][::-1]
+					region_list = region_notes[0:4][::-1]
 				for rn in region_list:
 					print "adding"
 					currentNote = Note(rn, 0, 0.16667/2, 127)
