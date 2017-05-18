@@ -26,14 +26,14 @@ midi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
 loudness = np.zeros((10, 8, duration), dtype=int)
-
+'''
 def get_Perlin_noise():
 	noise_array = np.empty((sequence.shape))
 	for i, x in np.ndenumerate(noise_array):
 		noise_array[i] = 1 + tmp.noise2d(i[0], i[1])
 	noise_array = make_threshold(60*noise_array)#midpoint between 0 and 127
 	return noise_array.astype(int)
-
+'''
 def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions):
 		time_slices_list = [datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=seconds) for seconds in range(1, duration+1)]
 		for i, moment in enumerate(time_slices_list): #time slices -- contiguous seconds from slice_start to slice_end
@@ -59,7 +59,7 @@ def render_timeseries_sequence():
 		mb = mb_per_second_in_region(region)
 		sessions = get_session_count(region)
 		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
-		timeseries[i,:] = make_threshold(np.rint(mb)).astype(int)
+		timeseries[i,:] = make_threshold(np.rint(mb), notes[i]).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration):
 			print timeseries[i, frame], "timeseries"
