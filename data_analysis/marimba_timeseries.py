@@ -1,5 +1,6 @@
 from __future__ import division
 import matplotlib.pyplot as plt
+import random
 
 # -*- coding: utf-8 -*-
 import numpy as np
@@ -121,10 +122,10 @@ def play_timeseries(sequence, loudness):
 			elif j%32 == 0:
 				print "32"
 				region_notes = []
-				for octave in [3, 4, 5, 6]:
+				for octave in random.sample([3, 4, 5, 6], 2):
 					rn = index_array[get_boxes(0, octave)].tolist()
 					region_notes = region_notes + rn
-				if box%2 == 0:
+				if octave%2 == 0:
 					region_list = region_notes[0:4]	
 				else:
 					region_list = region_notes[0:4][::-1]
