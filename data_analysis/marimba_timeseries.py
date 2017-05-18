@@ -117,12 +117,12 @@ def play_timeseries(sequence, loudness):
 			elif (note_sequence[j-1] <> -1):# or (note_sequence[j-2] <> -1):
 					sound = -1
 					noteSeq.append(Rest(1))
-			elif (j%30 == 0) or (j%31 ==0):
+			elif (j%6 == 0) or (j%7 ==0):
 				noteSeq.append(Rest(1))
-			elif j%32 == 0:
+			elif j%8 == 0:
 				print "32"
 				region_notes = []
-				for octave in random.sample([3, 4, 5, 6], 2):
+				for octave in random.sample([3, 4, 5, 6], 1):
 					rn = index_array[get_boxes(0, octave)].tolist()
 					region_notes = region_notes + rn
 				if octave%2 == 0:
