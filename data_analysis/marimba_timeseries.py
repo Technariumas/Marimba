@@ -128,7 +128,9 @@ def play_timeseries(sequence, loudness):
 				region_notes = []
 				if frame_counter[j] == 0:
 					for octave in random.sample([3, 4, 5, 6], 1):
-						rn = index_array[get_boxes(0, octave)].tolist()
+						#note = get_real_note_from_index(box)[0]
+						note = random.sample([0, 2, 5, 7], 1)
+						rn = index_array[get_boxes(note, octave)].tolist()
 						region_notes = region_notes + rn
 					if octave%2 == 0:
 						region_list = region_notes[0:5]	
