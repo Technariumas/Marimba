@@ -154,7 +154,8 @@ def play_timeseries(sequence, loudness):
 					if (j%3 == 0) or (j%3 == 1):#(j in highest_notes) or (j in lowest_notes):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
-						time_on = (sound % 16)						
+						time_on = (sound % 16)/4
+						print time_on, "time_on"						
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 
@@ -164,7 +165,8 @@ def play_timeseries(sequence, loudness):
 							if box%3 <> 0:
 								time_on = (sound % 15)*(0.13333/2)
 							else:	
-								time_on = (sound % 16)*(0.125/2)+0.125/2
+								time_on = 4*(sound % 16)*(0.125/2)+0.125/2
+								#print time_on, "time_on"
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 						#else:
