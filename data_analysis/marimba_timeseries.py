@@ -137,7 +137,7 @@ def play_timeseries(sequence, loudness):
 					else:
 						region_list = region_notes[0:5][::-1]
 					for rn in region_list:
-						print "adding", len(region_list)
+						print "adding", rn, len(region_list)
 						currentNote = Note(rn, 0, 0.16667/2, 127)
 						noteSeq.append(currentNote)
 					note_duration = 5*(0.16667/2)#len(region_notes)
@@ -161,7 +161,10 @@ def play_timeseries(sequence, loudness):
 					else:
 						if j%3 == 2:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
-							time_on = (sound % 6)*(1.333/2)
+							if box%3 == 0:
+								time_on = (sound % 6)*(0.375/2)
+							else:	
+								time_on = (sound % 6)*(1.333/2)
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 						#else:
