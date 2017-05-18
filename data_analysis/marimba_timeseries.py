@@ -118,7 +118,8 @@ def play_timeseries(sequence, loudness):
 					sound = -1
 					noteSeq.append(Rest(1))
 			elif (j%6 == 0) or (j%7 ==0):
-				noteSeq.append(Rest(1))
+				if frame_counter[j] == 0:
+					noteSeq.append(Rest(1))
 			elif j%8 == 0:
 				print "32", box
 				region_notes = []
