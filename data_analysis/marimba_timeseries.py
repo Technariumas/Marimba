@@ -19,7 +19,7 @@ note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
 durations = get_session_duration()
-durations = 0.25*np.divide(durations, np.max(durations))
+#durations = 0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
 midi = Midi(number_tracks=1, tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
@@ -38,6 +38,7 @@ def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sess
 		time_slices_list = [datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=seconds) for seconds in range(1, duration+1)]
 		for i, moment in enumerate(time_slices_list): #time slices -- contiguous seconds from slice_start to slice_end
 			if (moment <> timestamps[i]):
+				print moment, timestamps[i], "time"
 				timestamps.insert(i, moment)
 				mb.insert(i, 0)
 				sessions.insert(i, 0)
@@ -55,10 +56,12 @@ def render_timeseries_sequence():
 	volumeseries = np.zeros((4, duration), dtype=int) #array storing volume of each region (volume depends on session count)
 	for i, region in enumerate([1, 2, 3, 4]): #iterating over 4 notes
 		timestamps = get_unique_times_start(region)
-		print i, "changing region"
+		print region, "changing region"
 		mb = mb_per_second_in_region(region)
 		sessions = get_session_count(region)
+		print len(sessions)
 		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
+		print len(sessions)
 		timeseries[i,:] = make_threshold(np.rint(mb), notes[i]).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration):
@@ -151,16 +154,16 @@ def play_timeseries(sequence, loudness):
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
 					
-					if (j%3 == 0) or (j%3 == 1):#(j in highest_notes) or (j in lowest_notes):
+					if (j%2 == 0):#(j in highest_notes) or (j in lowest_notes):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
-						time_on = (sound % 8)
+						time_on = (sound % 16)
 						print time_on, "time_on"						
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 
 					else:
-						if j%3 == 2:
+						if j%2 == 1:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							if box%4 <> 0:
 								time_on = (sound % 15)*(0.13333/2)
