@@ -130,22 +130,23 @@ def play_timeseries(sequence, loudness):
 				print "32", box
 				region_notes = []
 				if frame_counter[j] == 0:
-					for octave in random.sample([3, 4, 5, 6], 1):
-						#note = get_real_note_from_index(box)[0]
-						note = random.sample([0, 2, 5, 7], 1)
-						rn = index_array[get_boxes(note, octave)].tolist()
-						region_notes = region_notes + rn
-					if octave%2 == 0:
-						region_list = region_notes[0:3]	
-					else:
-						region_list = region_notes[0:3][::-1]
-					for rn in region_list:
-						print "adding", rn, len(region_list)
-						currentNote = Note(rn, 0, 0.6667/2, 60)
-						noteSeq.append(currentNote)
-						noteSeq.append(Rest(0.6667/2))
-					note_duration = 3*((0.6667/2 + 0.6667/2))#len(region_notes)
-					noteSeq.append(Rest(1-note_duration))
+					if random.randint(4)%4 == 0:
+						for octave in random.sample([3, 4, 5, 6], 1):
+							#note = get_real_note_from_index(box)[0]
+							note = random.sample([0, 2, 5, 7], 1)
+							rn = index_array[get_boxes(note, octave)].tolist()
+							region_notes = region_notes + rn
+						if octave%2 == 0:
+							region_list = region_notes[0:3]	
+						else:
+							region_list = region_notes[0:3][::-1]
+						for rn in region_list:
+							print "adding", rn, len(region_list)
+							currentNote = Note(rn, 0, 0.6667/2, 60)
+							noteSeq.append(currentNote)
+							noteSeq.append(Rest(0.6667/2))
+						note_duration = 3*((0.6667/2 + 0.6667/2))#len(region_notes)
+						noteSeq.append(Rest(1-note_duration))
 					frame_counter[j] = j
 			else:
 					if j in highest_notes:
