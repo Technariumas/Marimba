@@ -15,7 +15,6 @@ except EOFError:
 	highStroke = [17] * 80
 
 
-
 if box_number == "all":
 	for n in range(80):
 		print("Dabartine jega: " + str(highStroke[n]))
