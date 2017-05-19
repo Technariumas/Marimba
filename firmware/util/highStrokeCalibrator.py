@@ -35,11 +35,11 @@ if box_number == "all":
 				except ValueError:
 					print("Vesk tik skaicius!")
 					m.test(n)
-	else:
-		n = int(box_number)
-		print("Dabartine jega: " + str(highStroke[n]))
-		m.setHighStrokeLength(n, highStroke[n])
-		while True:
+else:
+	n = int(box_number)
+	print("Dabartine jega: " + str(highStroke[n]))
+	m.setHighStrokeLength(n, highStroke[n])
+	while True:
 			key = raw_input("Patiko? (T/N)")
 			if 'T' == key or 't' == key:
 				with open('highStroke', 'wb') as fp:
