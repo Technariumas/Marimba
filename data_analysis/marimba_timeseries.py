@@ -129,6 +129,7 @@ def play_timeseries(sequence, loudness):
 			elif j%128 == 0:
 				print "32", box
 				region_notes = []
+				'''
 				if frame_counter[j] == 0:
 					if random.randint(4)%4 == 0:
 						for octave in random.sample([3, 4, 5, 6], 1):
@@ -148,6 +149,7 @@ def play_timeseries(sequence, loudness):
 						note_duration = 3*((0.6667/2 + 0.6667/2))#len(region_notes)
 						noteSeq.append(Rest(1-note_duration))
 					frame_counter[j] = j
+				'''		
 			else:
 					if j in highest_notes:
 							volume_sequence[j] = 60
