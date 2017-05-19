@@ -15,6 +15,6 @@ print "playing box #", box
 sequence = [box for i in range(0, length)]
 print sequence
 #notes, delay, duration, velocity
-m.playSequence(sequence, 1.5, 0.5, volume)
+m.playSequence(sequence, 1.5, duration, volume)
 time.sleep(10)
 #notes, delay, duration
