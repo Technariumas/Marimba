@@ -114,8 +114,8 @@ class Marimba:
 
 	def playSequence(self, notes, delay, duration, velocity):
 		for note in notes:
-			self.play(id=note, velocity=127)
+			self.play(id=note, velocity)
 			time.sleep(duration)
 			#for note in notes:
 			self.stop(id=note)
-		time.sleep(delay)
+			time.sleep(delay)
