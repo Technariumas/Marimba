@@ -143,7 +143,8 @@ def play_timeseries(sequence, loudness):
 						print "adding", rn, len(region_list)
 						currentNote = Note(rn, 0, 0.6667/2, 60)
 						noteSeq.append(currentNote)
-					note_duration = 3*(0.6667/2)#len(region_notes)
+						noteSeq.append(Rest(0.333/2))
+					note_duration = 3*((0.333/2 + 0.6667/2))#len(region_notes)
 					noteSeq.append(Rest(1-note_duration))
 					frame_counter[j] = j
 			else:
