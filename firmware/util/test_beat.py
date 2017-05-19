@@ -14,6 +14,6 @@ print "Usage: python test_beat.py [box number] [number of notes] [volume] [durat
 print "playing box #", box
 sequence = [box for i in range(0, length)]
 print sequence
-m.playSequence(sequence, 0, duration)
+m.playSequence(sequence, 0.5, duration)
 time.sleep(10)
 #notes, delay, duration
