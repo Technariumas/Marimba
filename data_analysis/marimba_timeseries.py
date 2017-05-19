@@ -158,11 +158,11 @@ def play_timeseries(sequence, loudness):
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
 					
-					if (j%5 == 0) or (j%5 == 1) or (j%5 == 2):#(j in highest_notes) or (j in lowest_notes):
+					if random.randint(1,10)> 3:#(j in highest_notes) or (j in lowest_notes):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (j % 4)
-						#print time_on, "time_on, 60 %"						
+						print time_on, "time_on, 60 %"						
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					else:
@@ -170,8 +170,8 @@ def play_timeseries(sequence, loudness):
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							if box%4 <> 0:
 								print box
-								time_on = 4*(box % 15)*(0.13333/2)
-								#print time_on, "time on -- j%2"
+								time_on = 4*(box % 15)*(0.16667/2)
+								print time_on, "time on -- j%2"
 							else:	
 								time_on = 4*(box % 6)*(0.333/2)#+0.125/2
 								print time_on, " 333, time_on"
