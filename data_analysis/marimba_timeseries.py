@@ -158,7 +158,7 @@ def play_timeseries(sequence, loudness):
 					#noteSeq.append(Rest(0.5))
 					pauseDur = 0#(box%5)*0.003
 					
-					if random.randint(1,10)> 3:#(j in highest_notes) or (j in lowest_notes):
+					if random.randint(1,100)> 35:#(j in highest_notes) or (j in lowest_notes):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (j % 4)
