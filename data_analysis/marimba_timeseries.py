@@ -108,7 +108,7 @@ def play_timeseries(sequence, loudness):
 	for box in range(80):
 		print box, 'box'
 		lightStepSeq.append(Note(box, 0, 0.125, 3))
-		lightMinSeq.append(Note(box, 0, 0.125, 60))
+		lightMinSeq.append(Note(box, 0, 0.125, 15))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 	print [note.volume for note in lightStepSeq]
 	lightMinSeq.append(Note(14, 0, 60))				
