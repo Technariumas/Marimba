@@ -106,10 +106,17 @@ lowest_G = [53, 44, 46, 67, 49]
 
 def play_timeseries(sequence, loudness):
 	frame_counter = np.zeros((duration))
+	lightStepSeq = []
+	lightMaxSeq = []
+	lightMinSeq = []
+	for box in range(80):
+		lightStepSeq.append(Note(box, 0, 60))
+		lightMaxSeq.append(Note(box, 0, 127))
+	lightMinSeq.append(Note(14, 0, 90))				
+	lightMaxSeq.append(Note(14, 0, 100))	
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
-		testNoteSeq = []
 		note_sequence = sequence[i]
 		volume_sequence = loudness[i]
 		for j, sound in enumerate(note_sequence):
@@ -126,9 +133,6 @@ def play_timeseries(sequence, loudness):
 			elif (note_sequence[j-1] <> -1):# or (note_sequence[j-2] <> -1):
 					sound = -1
 					noteSeq.append(Rest(1))
-			#elif (j%14 == 0):
-			#	if frame_counter[j+2] == 0:
-			#		noteSeq.append(Rest(1))
 			elif (j%127 == 0):
 				if frame_counter[j+1] == 0:
 					noteSeq.append(Rest(1))
@@ -181,23 +185,7 @@ def play_timeseries(sequence, loudness):
 								print time_on, " 333, time_on"
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
-						#else:
-						#	currentNote = Note(sound, 0, dur, volume_sequence[j])
-						#	time_on = (sound % 4)+0.5
-						#	noteSeq.append(currentNote)#volume_sequence[j]))
-						#	noteSeq.append(Rest(0.5 - (dur+pauseDur)))
 
-					#print sound, pauseDur, currentNote.midi_number, currentNote.dur, currentNote.volume
-					#testNoteSeq.append(Rest(1.75-pauseDur))
-					#testNote, testOctave = get_real_note_from_index(sound)
-					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
-		#print box, noteSeq
-		lightStepSeq = []
-		lightStepSeq.append(Note(14, 0, 60))
-		lightMinSeq = []
-		lightMinSeq.append(Note(14, 0, 90))				
-		lightMaxSeq = []
-		lightMaxSeq.append(Note(14, 0, 100))
 		midi.seq_notes(noteSeq, time=time_on, track=0)
 		midi.seq_notes(lightStepSeq, time=0, track=CHANNEL_PARAM_LED_STEP)
 		midi.seq_notes(lightMinSeq, time=0, track=CHANNEL_PARAM_LED_MINIMUM)
