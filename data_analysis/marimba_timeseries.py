@@ -13,6 +13,13 @@ from opensimplex import OpenSimplex
 from power_supply_spatial import *
 import sys
 
+'''
+	CHANNEL_PARAM_LED_STEP = 1
+	CHANNEL_PARAM_LED_MINIMUM = 2
+	CHANNEL_PARAM_LED_MAXIMUM = 3
+	CHANNEL_PARAM_LED_COUNT = 4
+'''
+
 outputName = sys.argv[1]
 octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
@@ -21,7 +28,7 @@ notes = [0, 2, 5, 7]
 durations = get_session_duration()
 #durations = 0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
-midi = Midi(number_tracks=1, tempo=120, instrument=11)
+midi = Midi(number_tracks=2, channel = [0, 1], tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
@@ -186,7 +193,10 @@ def play_timeseries(sequence, loudness):
 					#testNote, testOctave = get_real_note_from_index(sound)
 					#testNoteSeq.append(Note(testNote, testOctave, dur, volume_sequence[j]))
 		#print box, noteSeq
-		midi.seq_notes(noteSeq, time=time_on)
+		lightsSeq = []
+		lightsSeq.append(Note(14, 0, 127))
+		midi.seq_notes(noteSeq, time=time_on, track=0)
+		midi.seq_notes(lightsSeq, time=0, track=1)
 		#testMidi.seq_notes(testNoteSeq, time=0)
 	midi.write("midi_output/"+outputName+".mid")
 	#testMidi.write("midi_output/"+outputName+".mid")
