@@ -9,6 +9,8 @@ m.connect()
 
 [m.setLightStep(n, 3) for n in range(80)]
 sleep(1)
+[m.setLightCount(n, 4) for n in range(80)]
+sleep(1)
 [m.setLightMaximum(n, 127) for n in range(80)]
 sleep(1)
 [m.setLightMaximum(n, 60) for n in [randrange(60, 80) for i in range(3)]]
