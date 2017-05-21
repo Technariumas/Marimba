@@ -180,7 +180,7 @@ def play_timeseries(sequence, loudness):
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 
-
+		noteSeq.insert(0, noteSeq[-1])
 		midi.seq_notes(noteSeq, time=time_on, track=0)
 	midi.seq_notes(lightStepSeq, time=0, track=CHANNEL_PARAM_LED_STEP)
 	midi.seq_notes(lightMinSeq, time=0, track=CHANNEL_PARAM_LED_MINIMUM)
