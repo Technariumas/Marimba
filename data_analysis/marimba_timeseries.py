@@ -27,7 +27,7 @@ notes = [0, 2, 5, 7]
 durations = get_session_duration()
 #durations = 0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
-midi = Midi(number_tracks=5, channel = [0, 1, 2, 3, 4], tempo=120, instrument=11)
+midi = Midi(number_tracks=4, channel = [0, 1, 2, 3], tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
@@ -107,7 +107,9 @@ def play_timeseries(sequence, loudness):
 	lightMaxSeq = []
 	lightMinSeq = []
 	for box in range(80):
+		print box, 'box'
 		lightStepSeq.append(Note(box, 0, 0, 3))
+		lightMinSeq.append(Note(box, 0, 0, 60))
 		lightMaxSeq.append(Note(box, 0, 0, 127))
 	print lightStepSeq, "lightStepSeq"
 	#lightMinSeq.append(Note(14, 0, 90))				
