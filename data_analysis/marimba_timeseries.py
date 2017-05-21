@@ -17,7 +17,6 @@ import sys
 CHANNEL_PARAM_LED_STEP = 1
 CHANNEL_PARAM_LED_MINIMUM = 2
 CHANNEL_PARAM_LED_MAXIMUM = 3
-CHANNEL_PARAM_LED_COUNT = 4
 
 outputName = sys.argv[1]
 octaves = [3, 4, 5, 6]
@@ -27,7 +26,7 @@ notes = [0, 2, 5, 7]
 durations = get_session_duration()
 #durations = 0.25*np.divide(durations, np.max(durations))
 duration = get_duration() - 1
-midi = Midi(number_tracks=4, channel = [0, 1, 2, 3], tempo=120, instrument=11)
+midi = Midi(number_tracks=4, channel = [0, CHANNEL_PARAM_LED_STEP, CHANNEL_PARAM_LED_MINIMUM, CHANNEL_PARAM_LED_MAXIMUM], tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
@@ -108,12 +107,12 @@ def play_timeseries(sequence, loudness):
 	lightMinSeq = []
 	for box in range(80):
 		print box, 'box'
-		lightStepSeq.append(Note(box, 0, 0, 3))
-		lightMinSeq.append(Note(box, 0, 0, 60))
-		lightMaxSeq.append(Note(box, 0, 0, 127))
-	print lightStepSeq, "lightStepSeq"
-	#lightMinSeq.append(Note(14, 0, 90))				
-	#lightMaxSeq.append(Note(14, 0, 100))	
+		lightStepSeq.append(Note(box, 0, 0.125, 3))
+		lightMinSeq.append(Note(box, 0, 0.125, 60))
+		lightMaxSeq.append(Note(box, 0, 0.125, 127))
+	print [note.volume for note in lightStepSeq]
+	lightMinSeq.append(Note(14, 0, 60))				
+	lightMaxSeq.append(Note(14, 0, 127))	
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
@@ -185,11 +184,9 @@ def play_timeseries(sequence, loudness):
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 
 		midi.seq_notes(noteSeq, time=time_on, track=0)
-		midi.seq_notes(lightStepSeq, time=0, track=CHANNEL_PARAM_LED_STEP)
-		midi.seq_notes(lightMinSeq, time=0, track=CHANNEL_PARAM_LED_MINIMUM)
-		midi.seq_notes(lightMaxSeq, time=0, track=CHANNEL_PARAM_LED_MAXIMUM)
-
-		#testMidi.seq_notes(testNoteSeq, time=0)
+	midi.seq_notes(lightStepSeq, time=0, track=CHANNEL_PARAM_LED_STEP)
+	midi.seq_notes(lightMinSeq, time=0, track=CHANNEL_PARAM_LED_MINIMUM)
+	midi.seq_notes(lightMaxSeq, time=0, track=CHANNEL_PARAM_LED_MAXIMUM)
 	midi.write("midi_output/"+outputName+".mid")
 	#testMidi.write("midi_output/"+outputName+".mid")
 
