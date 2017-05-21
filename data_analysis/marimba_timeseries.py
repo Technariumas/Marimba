@@ -23,8 +23,7 @@ octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
-durations = get_session_duration()
-#durations = 0.25*np.divide(durations, np.max(durations))
+#durations = get_session_duration()
 duration = get_duration() - 1
 midi = Midi(number_tracks=4, channel = [0, CHANNEL_PARAM_LED_STEP, CHANNEL_PARAM_LED_MINIMUM, CHANNEL_PARAM_LED_MAXIMUM], tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
@@ -100,19 +99,34 @@ lowest_octave = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 
 lowest_F = [0, 50, 11, 23, 36]
 lowest_G = [53, 44, 46, 67, 49]
 
+def flash_lights(lightMaxSeq):
+	current_max_brightness = 127
+	for i in range(0, 30):
+		current_max_brightness-=3 
+		lightMaxSeq.append(Note(14, 0, 0.125, current_max_brightness))
+		lightMaxSeq.append(Rest(0.125))
+	for i in range(0, 30):
+		current_max_brightness+=3 
+		lightMaxSeq.append(Note(14, 0, 0.125, current_max_brightness)) 
+		lightMaxSeq.append(Rest(0.125))
+	return lightMaxSeq
+
+
 def play_timeseries(sequence, loudness):
 	frame_counter = np.zeros((duration))
 	lightStepSeq = []
 	lightMaxSeq = []
 	lightMinSeq = []
 	for box in range(80):
-		print box, 'box'
 		lightStepSeq.append(Note(box, 0, 0.125, 3))
 		lightStepSeq.append(Rest(0.125))
 		lightMinSeq.append(Note(box, 0, 0.125, 15))
 		lightMinSeq.append(Rest(0.125))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 		lightMaxSeq.append(Rest(0.125))
+	for time, seq in enumerate(sequence[0, 0, :]):
+		if time % 5 == 0:
+			lightMaxSeq = flash_lights(lightMaxSeq)
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
