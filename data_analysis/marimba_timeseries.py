@@ -65,20 +65,17 @@ def render_timeseries_sequence():
 		print region, "changing region"
 		mb = mb_per_second_in_region(region)
 		sessions = get_session_count(region)
-		print len(sessions)
 		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
-		print len(sessions)
 		timeseries[i,:] = make_threshold(np.rint(mb), notes[i]).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration):
-			print timeseries[i, frame], "timeseries"
 			time_slice = timeseries[i, frame]#octave value array sliced in time
 			#for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
 			if time_slice <> -1:
 					current_boxes = get_boxes(notes[i], time_slice) #indices of boxes with a given note and octave value
 					sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
 					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
-					print "note", notes[i], "octave", time_slice, current_boxes[0], current_boxes[1], "boxes"
+					#print "note", notes[i], "octave", time_slice, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
 		print "time: ", frame			
 	return sequence, loudness
@@ -110,10 +107,11 @@ def play_timeseries(sequence, loudness):
 	lightMaxSeq = []
 	lightMinSeq = []
 	for box in range(80):
-		lightStepSeq.append(Note(box, 0, 3))
-		lightMaxSeq.append(Note(box, 0, 127))
-	lightMinSeq.append(Note(14, 0, 90))				
-	lightMaxSeq.append(Note(14, 0, 100))	
+		lightStepSeq.append(Note(box, 0, 0, 3))
+		lightMaxSeq.append(Note(box, 0, 0, 127))
+	print lightStepSeq, "lightStepSeq"
+	#lightMinSeq.append(Note(14, 0, 90))				
+	#lightMaxSeq.append(Note(14, 0, 100))	
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
@@ -151,7 +149,6 @@ def play_timeseries(sequence, loudness):
 						else:
 							region_list = region_notes[0:3][::-1]
 						for rn in region_list:
-							print "adding", rn, len(region_list)
 							currentNote = Note(rn, 0, 0.6667/2, 60)
 							noteSeq.append(currentNote)
 							noteSeq.append(Rest(0.6667/2))
@@ -170,19 +167,18 @@ def play_timeseries(sequence, loudness):
 						#noteDur = 0.125#+(box)*0.003 #500ms, 0.125 - 1/16 #384ms damperio trukme
 						currentNote = Note(sound, 0, dur, volume_sequence[j])
 						time_on = (j % 4)
-						print time_on, "time_on, 60 %"						
+						#print time_on, "time_on, 60 %"						
 						noteSeq.append(currentNote)#volume_sequence[j]))
 						noteSeq.append(Rest(1 - (dur+pauseDur)))
 					else:
 						if j%5 == 4:
 							currentNote = Note(sound, 0, dur, volume_sequence[j])
 							if box%4 <> 0:
-								print box
 								time_on = 4*(box % 15)*(0.16667/2)
-								print time_on, "time on -- j%2"
+								#print time_on, "time on -- j%2"
 							else:	
 								time_on = 4*(box % 6)*(0.333/2)#+0.125/2
-								print time_on, " 333, time_on"
+								#print time_on, " 333, time_on"
 							noteSeq.append(currentNote)#volume_sequence[j]))
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 
