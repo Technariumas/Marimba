@@ -107,12 +107,12 @@ def play_timeseries(sequence, loudness):
 	lightMinSeq = []
 	for box in range(80):
 		print box, 'box'
-		lightStepSeq.append(Note(box, 0, 0.01, 3))
-		lightStepSeq.append(Rest(0.01))
-		lightMinSeq.append(Note(box, 0, 0.01, 15))
-		lightMinSeq.append(Rest(0.01))
-		lightMaxSeq.append(Note(box, 0, 0.01, 127))
-		lightMaxSeq.append(Rest(0.01))
+		lightStepSeq.append(Note(box, 0, 0.125, 3))
+		lightStepSeq.append(Rest(0.125))
+		lightMinSeq.append(Note(box, 0, 0.125, 15))
+		lightMinSeq.append(Rest(0.125))
+		lightMaxSeq.append(Note(box, 0, 0.125, 127))
+		lightMaxSeq.append(Rest(0.125))
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
