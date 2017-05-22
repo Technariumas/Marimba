@@ -126,9 +126,9 @@ def play_timeseries(sequence, loudness):
 		lightMinSeq.append(Rest(0.125))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 		lightMaxSeq.append(Rest(0.125))
-	#for time, seq in enumerate(sequence[0, 0, :]):
-		#if time % 5 == 0:
-	lightStepSeq = flash_lights(14, lightStepSeq)
+	for time, seq in enumerate(sequence[0, 0, :]):
+		if time % 5 == 0:
+			lightStepSeq = flash_lights(14, lightStepSeq)
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
