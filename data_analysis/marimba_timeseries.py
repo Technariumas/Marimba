@@ -121,13 +121,13 @@ def play_timeseries(sequence, loudness):
 	lightStepSeq = []
 	lightMaxSeq = []
 	lightMinSeq = []
-	for box in range(80):
-		lightStepSeq.append(Note(box, 0, 0.125, 3))
-		lightStepSeq.append(Rest(0.125))
-		lightMinSeq.append(Note(box, 0, 0.125, 15))
-		lightMinSeq.append(Rest(0.125))
-		lightMaxSeq.append(Note(box, 0, 0.125, 127))
-		lightMaxSeq.append(Rest(0.125))
+	#for box in range(80):
+	#	lightStepSeq.append(Note(box, 0, 0.125, 3))
+	#	lightStepSeq.append(Rest(0.125))
+	#	lightMinSeq.append(Note(box, 0, 0.125, 15))
+	#	lightMinSeq.append(Rest(0.125))
+	#	lightMaxSeq.append(Note(box, 0, 0.125, 127))
+	#	lightMaxSeq.append(Rest(0.125))
 	'''
 	for time in range(duration):
 		if time % 60 == 0:
