@@ -36,7 +36,11 @@ def get_lowest_max_brightness(box):
 
 def flash_lights(boxes):
 	current_max_brightness = 127
-	while current_max_brightness > get_lowest_max_brightness(box) :
+	lowest_brightnesses = []
+	for i in boxes:
+		lowest_brightnesses.append(get_lowest_max_brightness(box))
+	
+	while current_max_brightness >  4:
 		m.setLightMaximum(box, current_max_brightness)
 		print current_max_brightness
 		current_max_brightness-=4
@@ -51,7 +55,8 @@ def flash_lights(boxes):
 
 for i, tone in enumerate([0, 2, 5, 7]):
 	for i, octave in enumerate([3, 4, 5, 6]):
-		current_boxes = index_array(get_boxes(tone, octave)
+		current_boxes = index_array(get_boxes(tone, octave))
+		print current_boxes, "boxes"
 		flash_lights(current_boxes)
 			
 
