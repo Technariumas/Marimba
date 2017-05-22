@@ -99,23 +99,25 @@ lowest_octave = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 
 lowest_F = [0, 50, 11, 23, 36]
 lowest_G = [53, 44, 46, 67, 49]
 
-def flash_lights(note, lightStepSeq):
+def flash_lights(note):
 	current_max_brightness = 127
+	seq = []
 	for i in range(0, 30):
-		print current_max_brightness
 		current_max_brightness-=4
-		lightStepSeq.append(Note(note, 0, 0.1, current_max_brightness))
-		lightStepSeq.append(Rest(0.1))
+		seq.append(Note(note, 0, 0.1, current_max_brightness))
+		seq.append(Rest(0.1))
+		print current_max_brightness, "dimming"
 	for i in range(0, 30):
 		current_max_brightness+=4 
-		lightStepSeq.append(Note(note, 0, 0.1, current_max_brightness)) 
-		lightStepSeq.append(Rest(0.1))
-		print current_max_brightness, "dimming"
-	return lightStepSeq
+		seq.append(Note(note, 0, 0.1, current_max_brightness)) 
+		seq.append(Rest(0.1))
+		print current_max_brightness, "brightening"
+	return seq
 
 
 def play_timeseries(sequence, loudness):
 	frame_counter = np.zeros((duration))
+	current_max_brightness = 127
 	lightStepSeq = []
 	lightMaxSeq = []
 	lightMinSeq = []
@@ -126,9 +128,19 @@ def play_timeseries(sequence, loudness):
 		lightMinSeq.append(Rest(0.125))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 		lightMaxSeq.append(Rest(0.125))
-	for time, seq in enumerate(sequence[0, 0, :]):
+	for time in range(duration):
 		if time % 12 == 0:
-			lightStepSeq = flash_lights(14, lightStepSeq)
+			for i in range(0, 30):
+				current_max_brightness-=4
+				lightStepSeq.append(Note(14, 0, 0.1, current_max_brightness))
+				lightStepSeq.append(Rest(0.1))
+				print current_max_brightness, "dimming"
+			for i in range(0, 30):
+				current_max_brightness+=4 
+				lightStepSeq.append(Note(14, 0, 0.1, current_max_brightness)) 
+				lightStepSeq.append(Rest(0.1))
+				print current_max_brightness, "brightening"
+	print lightStepSeq		
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
