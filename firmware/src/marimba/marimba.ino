@@ -1,9 +1,19 @@
 #include <inttypes.h>
-#include <Bounce2.h>
+// #include <Bounce2.h>
 #include <avr/delay.h>
 
 #include "pca9685.h"
 #include <MIDI.h>
+
+#define HEALTH_GOOD 		0
+#define HEALTH_IN_NOTE 		_BV(1)
+#define HEALTH_NO_MIDI 		_BV(2)
+#define HEALTH_NO_HAMMER 	_BV(3)
+#define HEALTH_NO_DAMPER 	_BV(4)
+
+uint8_t healthStatus = 0;
+#define SERIAL_RX_BUFFER_SIZE 240
+
 #include "myserial.h"
 #include "lights.h"
 
@@ -29,23 +39,22 @@ struct MarimbaMIDISettings : public midi::DefaultSettings {
 	static const long BaudRate = 9600;
 };
 
-#define SERIAL_RX_BUFFER_SIZE 8
 typedef uint8_t rx_buffer_index_t;
 
 MIDI_CREATE_CUSTOM_INSTANCE(MySerial, mySerial, MIDI, MarimbaMIDISettings);
 
-Bounce button1 = Bounce();
-Bounce button2 = Bounce();
+// Bounce button1 = Bounce();
+// Bounce button2 = Bounce();
 
 inline static void buttonsSetup() {
 	// pinMode(BUTTON1, INPUT);
 	// pinMode(BUTTON2, INPUT);
 
-	button1.attach(BUTTON1);
-	button1.interval(100);
+	// button1.attach(BUTTON1);
+	// button1.interval(100);
 
-	button2.attach(BUTTON2);
-	button2.interval(100);
+	// button2.attach(BUTTON2);
+	// button2.interval(100);
 }
 
 inline static void outputsSetup() {
@@ -72,12 +81,12 @@ void setLed(uint8_t led, uint16_t r, uint16_t g, uint16_t b) {
 inline static ledDriverSetup() {
 	PCA9685_Init();
 //	setLed(LED1, 0, 4095, 4095);
-	setLed(LED2, 0, 4095, 4095);
-	_delay_ms(300);
-	setLed(LED1, 4095, 4095, 0);
+	setLed(LED1, 0, 4095, 4095);
+	_delay_ms(500);
+	setLed(LED2, 4095, 4095, 0);
 //	setLed(LED2, 4095, 4095, 0);
-	_delay_ms(300);
-	setLed(LED1, 4095, 3500, 4095);
+	_delay_ms(500);
+	// setLed(LED1, 4095, 3500, 4095);
 	setLed(LED2, 4095, 4095, 4095);
 }
 
@@ -131,13 +140,6 @@ uint8_t strokeMidLength = 60;
 uint8_t strokeInProgress = 0;
 
 
-#define HEALTH_GOOD 		0
-#define HEALTH_IN_NOTE 		_BV(1)
-#define HEALTH_NO_MIDI 		_BV(2)
-#define HEALTH_NO_HAMMER 	_BV(3)
-#define HEALTH_NO_DAMPER 	_BV(4)
-
-uint8_t healthStatus = 0;
 
 inline static void displayHealth() {
 	if(HEALTH_GOOD == healthStatus || HEALTH_NO_MIDI == healthStatus) {
@@ -169,25 +171,25 @@ inline static void displayHealth() {
 void loop() {
 	myNote = getDipSwitch();
 	chase();
-	button1.update();
-	button2.update();
+	// button1.update();
+	// button2.update();
 
 	MIDI.read();
 	
-	if(button1.fell()) {
-		strokeHigh();
-	}
-	if(button2.fell()) {
-		startDamper();
-	}
+	// if(button1.fell()) {
+	// 	strokeHigh();
+	// }
+	// if(button2.fell()) {
+	// 	startDamper();
+	// }
 	
 	if(strokeInProgress && (millis()  > strokeEnd)) {
 		TCCR1A &= ~_BV(COM1A1);
 		PORTB |=_BV(PB1);
 		if(analogRead(HAMMER_SENSE) < 50) {
-			healthStatus |= HEALTH_NO_HAMMER;
+			// healthStatus |= HEALTH_NO_HAMMER;
 		} else {
-			healthStatus &= ~HEALTH_NO_HAMMER;
+			// healthStatus &= ~HEALTH_NO_HAMMER;
 		}
 		PORTB &= ~_BV(PB1);
 		// digitalWrite(HAMMER, LOW);
@@ -240,7 +242,7 @@ uint16_t dampenPressLength = 300;
 uint8_t damperMaxDrive = 128;
 
 uint8_t isDamperIdle() {
-	return 0 == dampenPhase;
+	return DAMPEN_IDLE == dampenPhase;
 }
 
 void dampen() {
@@ -322,7 +324,8 @@ void startDamper() {
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
 	lastMidiTs = millis();
-	if(0 == velocity && 0 == channel) {
+
+	if(0 == velocity && 1 == channel) {
 		handleNoteOff(channel, pitch, velocity);
 		return;
 	}

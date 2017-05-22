@@ -47,6 +47,8 @@ class MySerial{
 	    if (i != _rx_buffer_tail) {
 	      _rx_buffer[_rx_buffer_head] = c;
 	      _rx_buffer_head = i;
+	    } else {
+	    	healthStatus |= HEALTH_NO_HAMMER;
 	    }
 	  } else {
 	    // Parity error, read byte but discard it
