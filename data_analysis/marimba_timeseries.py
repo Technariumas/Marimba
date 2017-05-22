@@ -128,9 +128,8 @@ def play_timeseries(sequence, loudness):
 		lightMinSeq.append(Rest(0.125))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 		lightMaxSeq.append(Rest(0.125))
-	'''
 	for time in range(duration):
-		if time % 60 == 0:
+		if time  == 60:
 			for i in range(0, 30):
 				current_max_brightness-=4
 				lightStepSeq.append(Note(14, 0, 0.25, current_max_brightness))
@@ -141,7 +140,8 @@ def play_timeseries(sequence, loudness):
 				lightStepSeq.append(Note(14, 0, 0.25, current_max_brightness)) 
 				lightStepSeq.append(Rest(0.25))
 				print current_max_brightness, "brightening"
-	'''
+		else:
+			lightStepSeq.append(Rest(0.5))
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
@@ -213,11 +213,11 @@ def play_timeseries(sequence, loudness):
 							noteSeq.append(Rest(1 - (dur+pauseDur)))
 
 		#noteSeq.insert(0, noteSeq[-1])
-		#midi.seq_notes(noteSeq, time=time_on, track=0)
+		midi.seq_notes(noteSeq, time=time_on, track=0)
 	print lightStepSeq	
-	midi.seq_notes(lightStepSeq, time=4, track=CHANNEL_PARAM_LED_STEP)
-	midi.seq_notes(lightMinSeq, time=4, track=CHANNEL_PARAM_LED_MINIMUM)
-	midi.seq_notes(lightMaxSeq, time=4, track=CHANNEL_PARAM_LED_MAXIMUM)
+	midi.seq_notes(lightStepSeq, time=0, track=CHANNEL_PARAM_LED_STEP)
+	midi.seq_notes(lightMinSeq, time=0.25, track=CHANNEL_PARAM_LED_MINIMUM)
+	midi.seq_notes(lightMaxSeq, time=0.5, track=CHANNEL_PARAM_LED_MAXIMUM)
 	midi.write("midi_output/"+outputName+".mid")
 	#testMidi.write("midi_output/"+outputName+".mid")
 
