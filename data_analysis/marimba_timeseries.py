@@ -126,9 +126,9 @@ def play_timeseries(sequence, loudness):
 		lightMinSeq.append(Rest(0.125))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 		lightMaxSeq.append(Rest(0.125))
-	for time, seq in enumerate(sequence[0, 0, :]):
-		if time % 5 == 0:
-			lightStepSeq = flash_lights(14, lightStepSeq)
+	#for time, seq in enumerate(sequence[0, 0, :]):
+		#if time % 5 == 0:
+	lightStepSeq = flash_lights(14, lightStepSeq)
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
@@ -201,6 +201,7 @@ def play_timeseries(sequence, loudness):
 
 		#noteSeq.insert(0, noteSeq[-1])
 		midi.seq_notes(noteSeq, time=time_on, track=0)
+	print lightStepSeq	
 	midi.seq_notes(lightStepSeq, time=8, track=CHANNEL_PARAM_LED_STEP)
 	midi.seq_notes(lightMinSeq, time=8, track=CHANNEL_PARAM_LED_MINIMUM)
 	midi.seq_notes(lightMaxSeq, time=8, track=CHANNEL_PARAM_LED_MAXIMUM)
