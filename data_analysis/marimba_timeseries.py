@@ -1,5 +1,4 @@
 from __future__ import division
-import matplotlib.pyplot as plt
 import random
 
 # -*- coding: utf-8 -*-
@@ -13,11 +12,6 @@ from opensimplex import OpenSimplex
 from power_supply_spatial import *
 import sys
 
-
-CHANNEL_PARAM_LED_STEP = 1
-CHANNEL_PARAM_LED_MINIMUM = 2
-CHANNEL_PARAM_LED_MAXIMUM = 3
-
 outputName = sys.argv[1]
 octaves = [3, 4, 5, 6]
 note_values = ["C", "D", "F", "G"]
@@ -25,7 +19,7 @@ notes = [0, 2, 5, 7]
 
 #durations = get_session_duration()
 duration = get_duration() - 1
-midi = Midi(number_tracks=4, channel = [0, CHANNEL_PARAM_LED_STEP, CHANNEL_PARAM_LED_MINIMUM, CHANNEL_PARAM_LED_MAXIMUM], tempo=120, instrument=11)
+midi = Midi(number_tracks=1, channel = 0, tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
@@ -99,49 +93,10 @@ lowest_octave = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 
 lowest_F = [0, 50, 11, 23, 36]
 lowest_G = [53, 44, 46, 67, 49]
 
-def flash_lights(note):
-	current_max_brightness = 127
-	seq = []
-	for i in range(0, 30):
-		current_max_brightness-=4
-		seq.append(Note(note, 0, 0.1, current_max_brightness))
-		seq.append(Rest(0.1))
-		print current_max_brightness, "dimming"
-	for i in range(0, 30):
-		current_max_brightness+=4 
-		seq.append(Note(note, 0, 0.1, current_max_brightness)) 
-		seq.append(Rest(0.1))
-		print current_max_brightness, "brightening"
-	return seq
 
 
 def play_timeseries(sequence, loudness):
 	frame_counter = np.zeros((duration))
-	current_max_brightness = 127
-	lightStepSeq = []
-	lightMaxSeq = []
-	lightMinSeq = []
-	for box in range(80):
-		lightStepSeq.append(Note(box, 0, 0.125, 3))
-		lightStepSeq.append(Rest(0.125))
-		lightMinSeq.append(Note(box, 0, 0.125, 15))
-		lightMinSeq.append(Rest(0.125))
-		lightMaxSeq.append(Note(box, 0, 0.125, 127))
-		lightMaxSeq.append(Rest(0.125))
-	for time in range(duration):
-		if time  == 60:
-			for i in range(0, 30):
-				current_max_brightness-=4
-				lightStepSeq.append(Note(14, 0, 0.25, current_max_brightness))
-				lightStepSeq.append(Rest(0.25))
-				print current_max_brightness, "dimming"
-			for i in range(0, 30):
-				current_max_brightness+=4 
-				lightStepSeq.append(Note(14, 0, 0.25, current_max_brightness)) 
-				lightStepSeq.append(Rest(0.25))
-				print current_max_brightness, "brightening"
-		else:
-			lightStepSeq.append(Rest(0.5))
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
@@ -214,10 +169,6 @@ def play_timeseries(sequence, loudness):
 
 		#noteSeq.insert(0, noteSeq[-1])
 		midi.seq_notes(noteSeq, time=time_on, track=0)
-	print lightStepSeq	
-	midi.seq_notes(lightStepSeq, time=0, track=CHANNEL_PARAM_LED_STEP)
-	midi.seq_notes(lightMinSeq, time=0.25, track=CHANNEL_PARAM_LED_MINIMUM)
-	midi.seq_notes(lightMaxSeq, time=0.5, track=CHANNEL_PARAM_LED_MAXIMUM)
 	midi.write("midi_output/"+outputName+".mid")
 	#testMidi.write("midi_output/"+outputName+".mid")
 
