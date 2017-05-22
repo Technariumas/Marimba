@@ -3,6 +3,7 @@ from marimba import Marimba
 from random import randrange
 from time import sleep
 import numpy as np
+from note_mapping import get_boxes
 
 m = Marimba()
 m.connect()
@@ -36,27 +37,29 @@ def get_lowest_max_brightness(box):
 
 def flash_lights(boxes):
 	current_max_brightness = 127
-	lowest_brightnesses = []
-	for i in boxes:
-		lowest_brightnesses.append(get_lowest_max_brightness(box))
-	
-	while current_max_brightness >  4:
-		m.setLightMaximum(box, current_max_brightness)
+	while current_max_brightness >  60:
+		for box in boxes:
+			if get_lowest_max_brightness(box) > current_max_brightness:
+				continue
+			else:
+				m.setLightMaximum(box, current_max_brightness)
 		print current_max_brightness
-		current_max_brightness-=4
-		sleep(0.1)
-	sleep(10)
+		current_max_brightness-=2
+		sleep(1)
+	sleep(4.6)
 	while current_max_brightness <= 123:
-		m.setLightMaximum(box, current_max_brightness)
+		for box in boxes:
+			m.setLightMaximum(box, current_max_brightness)
 		print current_max_brightness
-		current_max_brightness+=4
-		sleep(0.1)
-	sleep(10)
+		current_max_brightness+=2
+		sleep(1)
+	sleep(4.6)
+while True:
 
-for i, tone in enumerate([0, 2, 5, 7]):
-	for i, octave in enumerate([3, 4, 5, 6]):
-		current_boxes = index_array(get_boxes(tone, octave))
-		print current_boxes, "boxes"
-		flash_lights(current_boxes)
+	for i, tone in enumerate([0, 2, 5, 7]):
+		for i, octave in enumerate([3, 4, 5, 6]):
+			current_boxes = index_array[get_boxes(tone, octave)]
+			print current_boxes, "boxes"
+			flash_lights(current_boxes)
 			
 
