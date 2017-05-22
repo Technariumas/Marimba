@@ -128,6 +128,7 @@ def play_timeseries(sequence, loudness):
 		lightMinSeq.append(Rest(0.125))
 		lightMaxSeq.append(Note(box, 0, 0.125, 127))
 		lightMaxSeq.append(Rest(0.125))
+	'''
 	for time in range(duration):
 		if time % 60 == 0:
 			for i in range(0, 30):
@@ -140,9 +141,7 @@ def play_timeseries(sequence, loudness):
 				lightStepSeq.append(Note(14, 0, 0.25, current_max_brightness)) 
 				lightStepSeq.append(Rest(0.25))
 				print current_max_brightness, "brightening"
-		#else:
-		#	for i in range(0, 30):
-		#		lightStepSeq.append(Rest(1))
+	'''
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
