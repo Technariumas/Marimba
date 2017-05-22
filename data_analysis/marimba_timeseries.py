@@ -99,19 +99,19 @@ lowest_octave = [61, 73, 54, 65, 39, 60, 71, 35, 16, 58, 0, 50, 11, 23, 36, 53, 
 lowest_F = [0, 50, 11, 23, 36]
 lowest_G = [53, 44, 46, 67, 49]
 
-def flash_lights(note, lightMaxSeq):
+def flash_lights(note, lightStepSeq):
 	current_max_brightness = 127
 	for i in range(0, 30):
 		print current_max_brightness
 		current_max_brightness-=4
-		lightMaxSeq.append(Note(note, 0, 0.125, current_max_brightness))
-		lightMaxSeq.append(Rest(0.125))
+		lightStepSeq.append(Note(note, 0, 0.125, current_max_brightness))
+		lightStepSeq.append(Rest(0.125))
 	for i in range(0, 30):
 		current_max_brightness+=4 
-		lightMaxSeq.append(Note(note, 0, 0.125, current_max_brightness)) 
-		lightMaxSeq.append(Rest(0.125))
+		lightStepSeq.append(Note(note, 0, 0.125, current_max_brightness)) 
+		lightStepSeq.append(Rest(0.125))
 		print current_max_brightness, "dimming"
-	return lightMaxSeq
+	return lightStepSeq
 
 
 def play_timeseries(sequence, loudness):
@@ -128,7 +128,7 @@ def play_timeseries(sequence, loudness):
 		lightMaxSeq.append(Rest(0.125))
 	for time, seq in enumerate(sequence[0, 0, :]):
 		if time % 5 == 0:
-			lightMaxSeq = flash_lights(14, lightMaxSeq)
+			lightStepSeq = flash_lights(14, lightStepSeq)
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
