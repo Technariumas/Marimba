@@ -108,8 +108,8 @@ def flash_lights(note, lightStepSeq):
 		lightStepSeq.append(Rest(0.125))
 	for i in range(0, 30):
 		current_max_brightness+=4 
-		lightStepSeq.append(Note(note, 0, 0.125, current_max_brightness)) 
-		lightStepSeq.append(Rest(0.125))
+		lightStepSeq.append(Note(note, 0, 0.01, current_max_brightness)) 
+		lightStepSeq.append(Rest(0.01))
 		print current_max_brightness, "dimming"
 	return lightStepSeq
 
@@ -129,6 +129,8 @@ def play_timeseries(sequence, loudness):
 	for time, seq in enumerate(sequence[0, 0, :]):
 		if time % 5 == 0:
 			lightStepSeq = flash_lights(14, lightStepSeq)
+		else:
+			lightStepSeq.append(Rest(1))
 	for i, box in np.ndenumerate(index_array):
 		#print i, box, index_array[i]
 		noteSeq = []
