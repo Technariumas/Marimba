@@ -5,7 +5,7 @@ m=Marimba()
 m.connect()
 
 try:
-	with open('highStroke', 'rb') as fp:
+	with open('/home/pi/Marimba/firmware/util/highStroke', 'rb') as fp:
 		highStroke = pickle.load(fp)
 except Exception:
 	highStroke = [17] * 80

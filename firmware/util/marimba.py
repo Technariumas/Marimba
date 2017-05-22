@@ -33,12 +33,12 @@ class Marimba:
 	def stop(self, id):
 		self.output.note_off(note=id, channel=1)
 
-	def setHighStrokeLength(self, id, lengthMs = 17, test=true):
+	def setHighStrokeLength(self, id, lengthMs = 17, test=True):
 		self.output.note_on(channel=self.CHANNEL_PARAM_STROKE_HIGH_LENGTH, note=id, velocity=lengthMs)
 		if test:
 			self.test(id=id, velocity=127)
 
-	def setMidStrokeLength(self, id, lengthMs = 60, test=true):
+	def setMidStrokeLength(self, id, lengthMs = 60, test=True):
 		self.output.note_on(channel=self.CHANNEL_PARAM_STROKE_MID_LENGTH, note=id, velocity=lengthMs)
 		if test:
 			self.test(id=id, velocity=1)
@@ -112,10 +112,10 @@ class Marimba:
 		time.sleep(delay)
 		self.stop(id=id)
 
-	def playSequence(self, notes, delay, duration):
+	def playSequence(self, notes, delay, duration, velocity):
 		for note in notes:
-			self.play(id=note, velocity=127)
+			self.play(id=note, velocity=velocity)
 			time.sleep(duration)
-		for note in notes:
+			#for note in notes:
 			self.stop(id=note)
-		time.sleep(delay)
+			time.sleep(delay)
