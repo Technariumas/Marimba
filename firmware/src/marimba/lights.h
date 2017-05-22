@@ -66,7 +66,7 @@ static inline void setLedCount(uint8_t count) {
 }
 
 void chase() {
-	if(lights[head] + step <= maximum) {
+  if(lights[head] + step <= maximum) {
 		lights[head] += step;
 		
 		if(lights[tail] - step > minimum) {
@@ -74,6 +74,8 @@ void chase() {
 		}
 		outputLights();
 	} else {
+    lights[tail] = minimum;
+    lights[head] = maximum;
 		head = (head + 1) % 8;
 		tail = (tail + 1) % 8;
 	}
