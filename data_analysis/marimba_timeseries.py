@@ -18,7 +18,8 @@ note_values = ["C", "D", "F", "G"]
 notes = [0, 2, 5, 7]
 
 #durations = get_session_duration()
-duration = get_duration() - 1
+duration = get_duration() 
+print duration, "duration"
 midi = Midi(number_tracks=1, channel = 0, tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
@@ -36,7 +37,7 @@ def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sess
 		time_slices_list = [datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=seconds) for seconds in range(1, duration+1)]
 		for i, moment in enumerate(time_slices_list): #time slices -- contiguous seconds from slice_start to slice_end
 			if (moment <> timestamps[i]):
-				print moment, timestamps[i], "time"
+				print moment, timestamps[i], "time", (moment == timestamps[i])
 				timestamps.insert(i, moment)
 				mb.insert(i, 0)
 				sessions.insert(i, 0)
@@ -54,10 +55,12 @@ def render_timeseries_sequence():
 	volumeseries = np.zeros((4, duration), dtype=int) #array storing volume of each region (volume depends on session count)
 	for i, region in enumerate([1, 2, 3, 4]): #iterating over 4 notes
 		timestamps = get_unique_times_start(region)
-		print region, "changing region"
+		print region, "changing region", len(timestamps)
 		mb = mb_per_second_in_region(region)
+		print len(mb)
 		sessions = get_session_count(region)
-		timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
+		#timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
+		print len(mb)
 		timeseries[i,:] = make_threshold(np.rint(mb), notes[i]).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration):

@@ -70,7 +70,7 @@ def get_session_count(region):
 
 @db_session
 def get_unique_times_start(region):
-	return db.select("select distinct time_start from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end and cell_grp = $region")
+	return db.select("select distinct time_start from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end and cell_grp = $region order by time_start")
 
 @db_session
 def get_time_end():
@@ -80,18 +80,21 @@ def get_time_end():
 def get_mb_in_region(region):
 	return db.select("select mb from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end and cell_grp = $region order BY time_start")
 
-#@db_session
-#def get_duration():
-#	return (datetime.strptime(time_slice_end, '%Y-%m-%d %H:%M:%S') - datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S')).seconds
+@db_session
+def get_duration():
+	return (datetime.strptime(time_slice_end, '%Y-%m-%d %H:%M:%S') - datetime.strptime(time_slice_start, '%Y-%m-%d %H:%M:%S')).seconds
 
 def get_time_start_in_region(region):
 	return db.select("select time_start from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end and cell_grp = $region order by time_start")
 
-@db_session
-def get_session_duration():
-	return db.select("select datediff(time_finish,time_start) from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end")
+#@db_session
+#def get_session_duration():
+#	return db.select("select datediff(time_finish,time_start) from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end")
 
 @db_session
 def mb_per_second_in_region(region):
 	return db.select("sum(mb) as sum_mb from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end and cell_grp = $region GROUP BY time_start")
 
+@db_session
+def mb_per_second_in_region(region):
+	return db.select("sum(mb) as sum_mb from data_0516 where time_start >= $time_slice_start and time_start < $time_slice_end and cell_grp = $region GROUP BY time_start")
