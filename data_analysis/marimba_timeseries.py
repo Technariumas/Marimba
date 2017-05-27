@@ -38,7 +38,7 @@ def check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sess
 		for i, moment in enumerate(time_slices_list): #time slices -- contiguous seconds from slice_start to slice_end
 			if (moment <> timestamps[i]):
 				print moment, timestamps[i], "time", (moment == timestamps[i])
-				timestamps.insert(i, moment)
+				#timestamps.insert(i, moment)
 				mb.insert(i, 0)
 				sessions.insert(i, 0)
 		return timestamps, mb, sessions
@@ -57,10 +57,9 @@ def render_timeseries_sequence():
 		timestamps = get_unique_times_start(region)
 		print region, "changing region", len(timestamps)
 		mb = mb_per_second_in_region(region)
-		print len(mb)
 		sessions = get_session_count(region)
 		#timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
-		print len(mb)
+		print len(mb), "mb"
 		timeseries[i,:] = make_threshold(np.rint(mb), notes[i]).astype(int)
 		volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration):
@@ -72,7 +71,7 @@ def render_timeseries_sequence():
 					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
 					#print "note", notes[i], "octave", time_slice, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
-		print "time: ", frame			
+		#print "time: ", frame			
 	return sequence, loudness
 
 
@@ -183,15 +182,15 @@ def test_power_supply_safety(loudness):
 		for group in range(1, 11): #iterating over all groups
 			group_indices = return_current_power_supply_group_indices(group)
 			if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
-				print "clipping", np.where(loudness[:,:, frame] >= 127)[0].shape
+				#print "clipping", np.where(loudness[:,:, frame] >= 127)[0].shape
 				loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
 	return loudness			
 
 sequence, loudness = render_timeseries_sequence()
 loudness = test_power_supply_safety(loudness)
 
-for frame in range(duration):
-	print frame, "played notes", "loudness:", np.where(loudness[:,:,frame] > 0)[0].shape, loudness[:,:,frame][np.where(loudness[:,:,frame] > 0)], np.where(sequence[:,:,frame] > -1)[0].shape
+#for frame in range(duration):
+	#print frame, "played notes", "loudness:", np.where(loudness[:,:,frame] > 0)[0].shape, loudness[:,:,frame][np.where(loudness[:,:,frame] > 0)], np.where(sequence[:,:,frame] > -1)[0].shape
 	
 play_timeseries(sequence, loudness)
 
