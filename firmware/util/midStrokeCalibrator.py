@@ -25,7 +25,7 @@ for n in range(80):
 				i = int(val)
 				if i >= 0 and i <= 127:
 					midStroke[n] = i
-					m.setHighStrokeLength(n, i)
+					m.setMidStrokeLength(n, i)
 			except ValueError:
 				print("Vesk tik skaicius!")
 				m.test(n)
