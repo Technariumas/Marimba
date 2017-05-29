@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-geom = np.genfromtxt("notes_spatial.txt", dtype=str, delimiter = ";")
+geom = np.genfromtxt("/home/pi/Marimba/firmware/util/notes_spatial.txt", dtype=str, delimiter = ";")
 
 notes_spatial = np.zeros((10, 8), dtype=int)
 octaves_spatial = np.zeros((10, 8), dtype=int)
