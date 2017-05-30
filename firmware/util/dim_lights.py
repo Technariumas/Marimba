@@ -6,11 +6,11 @@ m.connect()
 
 print("Dimming all lights...")
 
-m.setLightMaximum(4, 40)# for n in range(80)]
+m.setLightMaximuma(14, 40)# for n in range(80)]
 sleep(1)
-m.setLightMinimum(4, 40)# for n in range(80)]
+m.setLightMinimum(14, 40)# for n in range(80)]
 sleep(1)
-m.setLightStep(4, 7)# for n in range(80)]
+m.setLightStep(14, 7)# for n in range(80)]
 
 
 '''
