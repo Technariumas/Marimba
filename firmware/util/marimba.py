@@ -27,7 +27,7 @@ class Marimba:
 				return
 		raise Exception("Can't find 'ttyMIDI' device. Is ttymidi utility runing?")
 
-	def play(self, id, velocity = 127):
+	def play(self, id, velocity = 60):
 		self.output.note_on(note=id, velocity=velocity, channel=0)
 
 	def stop(self, id):
