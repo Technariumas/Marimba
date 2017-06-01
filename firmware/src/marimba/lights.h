@@ -78,5 +78,6 @@ void chase() {
     lights[head] = maximum;
 		head = (head + 1) % 8;
 		tail = (tail + 1) % 8;
+		outputLights();
 	}
 }

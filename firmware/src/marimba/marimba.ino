@@ -32,6 +32,19 @@ uint8_t healthStatus = 0;
 #define HAMMER_SENSE A7
 #define DAMPER_SENSE A6
 
+#define CHANNEL_SOLENOIDS 1
+#define CHANNEL_PARAM_LED_STEP 2
+#define CHANNEL_PARAM_LED_MINIMUM 3
+#define CHANNEL_PARAM_LED_MAXIMUM 4
+#define CHANNEL_PARAM_LED_COUNT 5
+#define CHANNEL_PARAM_STROKE_HIGH_LENGTH 6
+#define CHANNEL_PARAM_STROKE_MID_LENGTH 7
+#define CHANNEL_PARAM_DAMPER_ENGAGE_DELAY 8
+#define CHANNEL_PARAM_DAMPER_PRESS_LENGTH 9
+#define CHANNEL_PARAM_DAMPER_MAX_DRIVE 10
+
+
+
 uint32_t lastMidiTs = 0;
 
 struct MarimbaMIDISettings : public midi::DefaultSettings {
@@ -47,8 +60,8 @@ MIDI_CREATE_CUSTOM_INSTANCE(MySerial, mySerial, MIDI, MarimbaMIDISettings);
 // Bounce button2 = Bounce();
 
 inline static void buttonsSetup() {
-	// pinMode(BUTTON1, INPUT);
-	// pinMode(BUTTON2, INPUT);
+	 pinMode(BUTTON1, INPUT);
+	 pinMode(BUTTON2, INPUT);
 
 	// button1.attach(BUTTON1);
 	// button1.interval(100);
@@ -125,10 +138,13 @@ static inline uint16_t getDipSwitch() {
 
 void setup(){
 	ledDriverSetup();
-	buttonsSetup();
 	outputsSetup();
 	midiSetup();
 	TCCR1B = TCCR1B & 0b11111000 | 1;
+    OCR1A = 0;
+	TCCR1A |= _BV(COM1A1);
+
+	buttonsSetup();
 }
 
 
@@ -168,13 +184,15 @@ inline static void displayHealth() {
 	}
 }
 
+
 void loop() {
 	myNote = getDipSwitch();
 	chase();
+    _delay_ms(2);
 	// button1.update();
 	// button2.update();
 
-	MIDI.read();
+	//MIDI.read();
 	
 	// if(button1.fell()) {
 	// 	strokeHigh();
@@ -182,17 +200,43 @@ void loop() {
 	// if(button2.fell()) {
 	// 	startDamper();
 	// }
+
+    if( !strokeInProgress && ((PINB & _BV(PINB5))==0) )
+        { 
+            handleNoteOn(CHANNEL_SOLENOIDS, myNote, 127);
+
+        setLed(LED1, 4095, 0, 4095);
+        }
+        else setLed(LED1, 4095, 4095, 4095);
+
+    if( !strokeInProgress && ((PINB & _BV(PINB3))==0 )) 
+        { 
+            handleNoteOn(CHANNEL_SOLENOIDS, myNote, 64);
+
+        setLed(LED1, 4095, 0, 4095);
+        }
+        else setLed(LED1, 4095, 4095, 4095);
+
+    if( strokeInProgress)
+     {
+        setLed(LED2, 4095, 4095, 0);
+     }
+    else
+     {   
+        setLed(LED2, 4095, 4095, 4095);
+     };
 	
 	if(strokeInProgress && (millis()  > strokeEnd)) {
-		TCCR1A &= ~_BV(COM1A1);
-		PORTB |=_BV(PB1);
-		if(analogRead(HAMMER_SENSE) < 50) {
+	//	TCCR1A &= ~_BV(COM1A1);
+	//	PORTB |=_BV(PB1);
+//		if(analogRead(HAMMER_SENSE) < 50) {
 			// healthStatus |= HEALTH_NO_HAMMER;
-		} else {
+//		} else {
 			// healthStatus &= ~HEALTH_NO_HAMMER;
-		}
-		PORTB &= ~_BV(PB1);
+//		}
+	//	PORTB &= ~_BV(PB1);
 		// digitalWrite(HAMMER, LOW);
+    	OCR1A = 0;
 		strokeInProgress = 0;
 	}
 	dampen();
@@ -202,11 +246,12 @@ void loop() {
 		healthStatus &= ~HEALTH_NO_MIDI;
 	}
 
-	displayHealth();
+	//displayHealth();
 }
 
 void strokeHigh() {
-	PORTB |= _BV(PB1);	
+//	PORTB |= _BV(PB1);
+	OCR1A = 255;
 	// analogWrite(HAMMER, 255);
 	strokeEnd = millis() + strokeHighLength;
 	strokeInProgress = 1;
@@ -215,11 +260,11 @@ void strokeHigh() {
 }
 
 void strokeMid() {
-	PORTB |= _BV(PB1);	
+//	PORTB |= _BV(PB1);	
 	//analogWrite(HAMMER, 255);
 	_delay_ms(1);
 	
-	TCCR1A |= _BV(COM1A1);
+//	TCCR1A |= _BV(COM1A1);
 	OCR1A = 128;
 //	analogWrite(HAMMER, 128);
 	strokeInProgress = 1;
@@ -310,17 +355,6 @@ void startDamper() {
 // //  _delay_ms(100);
 //   analogWrite(DAMPER, 0);
 }
-
-#define CHANNEL_SOLENOIDS 1
-#define CHANNEL_PARAM_LED_STEP 2
-#define CHANNEL_PARAM_LED_MINIMUM 3
-#define CHANNEL_PARAM_LED_MAXIMUM 4
-#define CHANNEL_PARAM_LED_COUNT 5
-#define CHANNEL_PARAM_STROKE_HIGH_LENGTH 6
-#define CHANNEL_PARAM_STROKE_MID_LENGTH 7
-#define CHANNEL_PARAM_DAMPER_ENGAGE_DELAY 8
-#define CHANNEL_PARAM_DAMPER_PRESS_LENGTH 9
-#define CHANNEL_PARAM_DAMPER_MAX_DRIVE 10
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
 	lastMidiTs = millis();
