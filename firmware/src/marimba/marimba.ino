@@ -188,7 +188,7 @@ inline static void displayHealth() {
 void loop() {
 	myNote = getDipSwitch();
 	chase();
-    _delay_ms(2);
+    // _delay_ms(2);
 	// button1.update();
 	// button2.update();
 
