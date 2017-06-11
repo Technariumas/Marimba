@@ -192,7 +192,7 @@ void loop() {
 	// button1.update();
 	// button2.update();
 
-	//MIDI.read();
+	MIDI.read();
 	
 	// if(button1.fell()) {
 	// 	strokeHigh();
@@ -246,7 +246,7 @@ void loop() {
 		healthStatus &= ~HEALTH_NO_MIDI;
 	}
 
-	//displayHealth();
+	displayHealth();
 }
 
 void strokeHigh() {
