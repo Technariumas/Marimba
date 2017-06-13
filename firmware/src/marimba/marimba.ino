@@ -155,7 +155,9 @@ uint8_t strokeHighLength = 17;
 uint8_t strokeMidLength = 60;
 uint8_t strokeInProgress = 0;
 
-
+uint32_t millis_lapse;
+uint8_t midi_cycles;
+uint8_t midi_i;
 
 inline static void displayHealth() {
 	if(HEALTH_GOOD == healthStatus || HEALTH_NO_MIDI == healthStatus) {
@@ -188,11 +190,10 @@ inline static void displayHealth() {
 void loop() {
 	myNote = getDipSwitch();
 	chase();
-    // _delay_ms(2);
 	// button1.update();
 	// button2.update();
-
-	MIDI.read();
+    //  midi_cycles=(mySerial.available() / 3) + 1; for(midi_i=0;midi_i<midi_cycles;midi_i++) { MIDI.read(); }
+      MIDI.read();
 	
 	// if(button1.fell()) {
 	// 	strokeHigh();
@@ -201,7 +202,7 @@ void loop() {
 	// 	startDamper();
 	// }
 
-    if( !strokeInProgress && ((PINB & _BV(PINB5))==0) )
+    if( !strokeInProgress && ((PINB & _BV(PINB5))==0) && (millis() >( strokeEnd + 100) ) )
         { 
             handleNoteOn(CHANNEL_SOLENOIDS, myNote, 127);
 
@@ -209,14 +210,14 @@ void loop() {
         }
         else setLed(LED1, 4095, 4095, 4095);
 
-    if( !strokeInProgress && ((PINB & _BV(PINB3))==0 )) 
+/*    if( !strokeInProgress && ((PINB & _BV(PINB3))==0 && (millis() >( strokeEnd + 10) ))) 
         { 
             handleNoteOn(CHANNEL_SOLENOIDS, myNote, 64);
 
         setLed(LED1, 4095, 0, 4095);
         }
         else setLed(LED1, 4095, 4095, 4095);
-
+*/
     if( strokeInProgress)
      {
         setLed(LED2, 4095, 4095, 0);
@@ -227,15 +228,7 @@ void loop() {
      };
 	
 	if(strokeInProgress && (millis()  > strokeEnd)) {
-	//	TCCR1A &= ~_BV(COM1A1);
-	//	PORTB |=_BV(PB1);
-//		if(analogRead(HAMMER_SENSE) < 50) {
-			// healthStatus |= HEALTH_NO_HAMMER;
-//		} else {
-			// healthStatus &= ~HEALTH_NO_HAMMER;
-//		}
-	//	PORTB &= ~_BV(PB1);
-		// digitalWrite(HAMMER, LOW);
+//        while (millis() < strokeEnd) 1+1;
     	OCR1A = 0;
 		strokeInProgress = 0;
 	}
@@ -251,9 +244,12 @@ void loop() {
 
 void strokeHigh() {
 //	PORTB |= _BV(PB1);
-	OCR1A = 255;
 	// analogWrite(HAMMER, 255);
-	strokeEnd = millis() + strokeHighLength;
+    millis_lapse=millis();
+    while (millis() < millis_lapse + 1) 1+1;
+    OCR1A = 255;
+//	strokeEnd = millis() + strokeHighLength;
+	strokeEnd = millis_lapse + strokeHighLength;
 	strokeInProgress = 1;
   // _delay_ms(19);
   // digitalWrite(HAMMER, LOW);
@@ -309,11 +305,11 @@ void dampen() {
 			if(millis() > dampenCycleEnd) {
 				OCR1B = 255;
 				_delay_us(10);
-				if(analogRead(DAMPER_SENSE) < 50) {
-					healthStatus |= HEALTH_NO_DAMPER;
-				} else {
-					healthStatus &= ~HEALTH_NO_DAMPER;
-				}
+//				if(analogRead(DAMPER_SENSE) < 50) {
+//					healthStatus |= HEALTH_NO_DAMPER;
+//				} else {
+//					healthStatus &= ~HEALTH_NO_DAMPER;
+//				}
 				OCR1B = damperMaxDrive;
 				dampenPhase = DAMPEN_DISENGAGE;
 				dampenCycleEnd = millis() + dampenCycleLength;
