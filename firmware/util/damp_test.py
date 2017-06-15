@@ -3,7 +3,7 @@ from marimba import Marimba
 from time import sleep
 from os import sys
 
-box_number = sys.argv[1]
+box_number = int(sys.argv[1])
 m = Marimba()
 m.connect()
 
