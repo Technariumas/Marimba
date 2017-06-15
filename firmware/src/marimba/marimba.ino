@@ -138,6 +138,8 @@ uint32_t strokeEnd = 0;
 uint8_t strokeHighLength = 17;
 uint8_t strokeMidLength = 60;
 uint8_t strokeInProgress = 0;
+volatile uint8_t shouldDampen=0;
+
 
 
 
@@ -194,6 +196,7 @@ void loop() {
 		PORTB &= ~_BV(PB1);
 		// digitalWrite(HAMMER, LOW);
 		strokeInProgress = 0;
+        shouldDampen=1;
 	}
 	dampen();
 	if(millis() - lastMidiTs > 5000) {
@@ -373,7 +376,8 @@ void handleNoteOn(byte channel, byte pitch, byte velocity) {
 
 void handleNoteOff(byte channel, byte pitch, byte velocity) {
 	lastMidiTs = millis();
-	if(myNote == pitch && isDamperIdle()) {
+	if(myNote == pitch && isDamperIdle() && shouldDampen==1 ) {
+        shouldDampen=0;
 		startDamper();
 	}
 }
