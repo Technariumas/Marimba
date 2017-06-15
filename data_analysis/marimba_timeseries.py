@@ -118,6 +118,9 @@ def play_timeseries(sequence, loudness):
 			elif (note_sequence[j-1] <> -1):# or (note_sequence[j-2] <> -1):
 					sound = -1
 					noteSeq.append(Rest(1))
+			elif (note_sequence[j-2] <> -1):# or (note_sequence[j-2] <> -1):
+					sound = -1
+					noteSeq.append(Rest(1))
 			elif (j%127 == 0):
 				if frame_counter[j+1] == 0:
 					noteSeq.append(Rest(1))
