@@ -56,24 +56,13 @@ typedef uint8_t rx_buffer_index_t;
 
 MIDI_CREATE_CUSTOM_INSTANCE(MySerial, mySerial, MIDI, MarimbaMIDISettings);
 
-// Bounce button1 = Bounce();
-// Bounce button2 = Bounce();
-
 inline static void buttonsSetup() {
 	 pinMode(BUTTON1, INPUT);
 	 pinMode(BUTTON2, INPUT);
-
-	// button1.attach(BUTTON1);
-	// button1.interval(100);
-
-	// button2.attach(BUTTON2);
-	// button2.interval(100);
 }
 
 inline static void outputsSetup() {
 	DDRB |= _BV(PB1) | _BV(PB2);	
-	// pinMode(SOLENOID1, OUTPUT);
-	// pinMode(SOLENOID2, OUTPUT);
 }
 
 // void ledsOff() {
@@ -93,15 +82,74 @@ void setLed(uint8_t led, uint16_t r, uint16_t g, uint16_t b) {
 
 inline static ledDriverSetup() {
 	PCA9685_Init();
-//	setLed(LED1, 0, 4095, 4095);
-	setLed(LED1, 0, 4095, 4095);
-	_delay_ms(500);
-	setLed(LED2, 4095, 4095, 0);
+//	setLed(LED1, 4095, 4095, 4095);
+//	_delay_ms(500);
 //	setLed(LED2, 4095, 4095, 0);
-	_delay_ms(500);
-	// setLed(LED1, 4095, 3500, 4095);
-	setLed(LED2, 4095, 4095, 4095);
+//	_delay_ms(500);
+//	setLed(LED2, 4095, 4095, 4095);
 }
+
+void timer_setup() {
+    TCCR2A=0;
+    TCCR2B= (1 << CS22) | (1 << CS21) |(1 << CS20); // Prescaler 1024
+    TCNT2=0;
+    TIMSK2 = (1 << TOIE2); //enable Overflow interrupt
+}
+
+volatile void ( *timer_callback)()= (void *)  NULL;
+volatile uint32_t timer_left=0;
+volatile uint8_t  ada = 0;
+
+
+void set_timer_reg(uint8_t cnt) {
+    TCNT2= cnt;
+    }
+    
+// give timeout in 
+void set_timer(uint32_t timeout, void ( *_callback)(void)) {
+   uint32_t total;
+//   noInterrupts();
+   timer_callback=_callback;
+   ada = 1;
+// how many counter ticks per ms && fixed point math ;-)
+   total =(uint32_t) ((uint32_t) 15625 * (uint32_t) timeout) / (uint32_t) 1000 ; //increments per millisecond * timeout
+   if( total > 255)
+    {
+        timer_left=total-255;
+        set_timer_reg(0);
+  //      interrupts();
+    }
+    else
+    {
+        set_timer_reg(255-total);
+    //    interrupts();
+    }
+
+}
+
+ISR(TIMER2_OVF_vect) {
+    if ( (timer_left < 2) ) 
+    {
+        if(ada) {
+
+            TCNT2=1;
+            if(timer_callback) timer_callback();
+            timer_callback=(void *)  NULL;
+            ada = 0;
+        }
+    }
+    else if(timer_left > 255)
+    {
+        timer_left-=255;
+    }
+    else // if ( timer_left > 0) 
+    {   
+        TCNT2=255-timer_left;
+        timer_left=0;
+    }
+
+}
+    
 
 static inline void midiSetup() {
     MIDI.setHandleNoteOn(handleNoteOn);  // Put only the name of the function
@@ -143,21 +191,18 @@ void setup(){
 	TCCR1B = TCCR1B & 0b11111000 | 1;
     OCR1A = 0;
 	TCCR1A |= _BV(COM1A1);
-
 	buttonsSetup();
+    timer_setup();
 }
 
 
 uint8_t myNote = 0;
 
 uint32_t strokeEnd = 0;
-uint8_t strokeHighLength = 17;
-uint8_t strokeMidLength = 60;
-uint8_t strokeInProgress = 0;
-
-uint32_t millis_lapse;
-uint8_t midi_cycles;
-uint8_t midi_i;
+uint32_t strokeHighLength = 12;
+uint32_t strokeMidLength = 60;
+volatile uint8_t strokeInProgress = 0;
+volatile uint8_t wantMidStroke = 0;
 
 inline static void displayHealth() {
 	if(HEALTH_GOOD == healthStatus || HEALTH_NO_MIDI == healthStatus) {
@@ -165,73 +210,41 @@ inline static void displayHealth() {
 		return;
 	}
 
-	if(healthStatus & HEALTH_NO_HAMMER) {
-		setLed(LED1, 0, 4095, 4095);
-		return;
-	}
-
-	if(healthStatus & HEALTH_NO_DAMPER) {
-		setLed(LED1, 1000, 4095, 1000);
-		return;
-	}
-
 	if(healthStatus & HEALTH_NO_MIDI) {
 		setLed(LED2, 4095, 4095, 0);
-	} else {
+	} else if(strokeInProgress){
+		setLed(LED2, 0, 4095, 4095);}
+    else {
 		setLed(LED2, 4095, 4095, 4095);
 	}
 
 	if(healthStatus & HEALTH_IN_NOTE) {
-		setLed(LED1, 4095, 0, 4095);
+		setLed(LED1, 0, 4095, 4095);
 	}
 }
 
 
 void loop() {
-	myNote = getDipSwitch();
-	chase();
-	// button1.update();
-	// button2.update();
-    //  midi_cycles=(mySerial.available() / 3) + 1; for(midi_i=0;midi_i<midi_cycles;midi_i++) { MIDI.read(); }
-      MIDI.read();
 	
-	// if(button1.fell()) {
-	// 	strokeHigh();
-	// }
-	// if(button2.fell()) {
-	// 	startDamper();
-	// }
-
-    if( !strokeInProgress && ((PINB & _BV(PINB5))==0) && (millis() >( strokeEnd + 100) ) )
-        { 
+    myNote = getDipSwitch();
+	chase();
+    MIDI.read();
+    MIDI.read();
+    MIDI.read();
+	
+    if( !strokeInProgress && ((PINB & _BV(PINB5))==0) )
+        {
             handleNoteOn(CHANNEL_SOLENOIDS, myNote, 127);
+          // handleNoteOn(CHANNEL_SOLENOIDS, myNote, 127);
+       }
 
-        setLed(LED1, 4095, 0, 4095);
-        }
-        else setLed(LED1, 4095, 4095, 4095);
-
-/*    if( !strokeInProgress && ((PINB & _BV(PINB3))==0 && (millis() >( strokeEnd + 10) ))) 
+/*
+     if( !strokeInProgress && ((PINB & _BV(PINB3))==0 && (millis() >( strokeEnd + 10) ))) 
         { 
             handleNoteOn(CHANNEL_SOLENOIDS, myNote, 64);
-
-        setLed(LED1, 4095, 0, 4095);
         }
-        else setLed(LED1, 4095, 4095, 4095);
 */
-    if( strokeInProgress)
-     {
-        setLed(LED2, 4095, 4095, 0);
-     }
-    else
-     {   
-        setLed(LED2, 4095, 4095, 4095);
-     };
 	
-	if(strokeInProgress && (millis()  > strokeEnd)) {
-//        while (millis() < strokeEnd) 1+1;
-    	OCR1A = 0;
-		strokeInProgress = 0;
-	}
 	dampen();
 	if(millis() - lastMidiTs > 5000) {
 		healthStatus |= HEALTH_NO_MIDI;
@@ -242,31 +255,23 @@ void loop() {
 	displayHealth();
 }
 
+void strokeStop() {
+    strokeInProgress=0;
+    OCR1A = 0;
+    }
+
 void strokeHigh() {
-//	PORTB |= _BV(PB1);
-	// analogWrite(HAMMER, 255);
-    millis_lapse=millis();
-    while (millis() < millis_lapse + 1) 1+1;
-    OCR1A = 255;
-//	strokeEnd = millis() + strokeHighLength;
-	strokeEnd = millis_lapse + strokeHighLength;
+    OCR1A = 255; //set PWM to 255
+    set_timer(strokeHighLength,strokeStop);
 	strokeInProgress = 1;
-  // _delay_ms(19);
-  // digitalWrite(HAMMER, LOW);
 }
 
 void strokeMid() {
-//	PORTB |= _BV(PB1);	
-	//analogWrite(HAMMER, 255);
-	_delay_ms(1);
-	
-//	TCCR1A |= _BV(COM1A1);
-	OCR1A = 128;
-//	analogWrite(HAMMER, 128);
 	strokeInProgress = 1;
-	strokeEnd = millis() + strokeMidLength;
-	// _delay_ms(60);
-	// digitalWrite(HAMMER, LOW);
+    OCR1A = 255; //set PWM to 255
+    _delay_ms(1);
+    set_timer(strokeMidLength,strokeStop);
+    OCR1A = 127; //set PWM to 255
 }
 
 #define DAMPEN_IDLE 		0
@@ -305,11 +310,6 @@ void dampen() {
 			if(millis() > dampenCycleEnd) {
 				OCR1B = 255;
 				_delay_us(10);
-//				if(analogRead(DAMPER_SENSE) < 50) {
-//					healthStatus |= HEALTH_NO_DAMPER;
-//				} else {
-//					healthStatus &= ~HEALTH_NO_DAMPER;
-//				}
 				OCR1B = damperMaxDrive;
 				dampenPhase = DAMPEN_DISENGAGE;
 				dampenCycleEnd = millis() + dampenCycleLength;
@@ -319,8 +319,6 @@ void dampen() {
 			if(millis() > dampenCycleEnd) {
 				damperDrive -= 1;
 				OCR1B = damperDrive;
-				// analogWrite(DAMPER, damperDrive);
-
 				if(damperDrive <= 0){
 					dampenPhase = DAMPEN_IDLE;
 				} else {
@@ -338,18 +336,6 @@ void startDamper() {
     damperDrive = 1;
 	TCCR1A |= _BV(COM1B1);
 	OCR1B = damperDrive;
-//    analogWrite(DAMPER, damperDrive);
-//   for(uint8_t i = 0; i <=128; i+=2) {
-//     analogWrite(DAMPER, i);
-//     _delay_ms(2);  
-//   }
-//   _delay_ms(300);
-//   for(uint8_t i = 128; i > 40; i-=2) {
-//     analogWrite(DAMPER, i);
-//     _delay_ms(2);  
-//   }
-// //  _delay_ms(100);
-//   analogWrite(DAMPER, 0);
 }
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
