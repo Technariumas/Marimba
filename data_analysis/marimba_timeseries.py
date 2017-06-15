@@ -24,7 +24,7 @@ midi = Midi(number_tracks=1, channel = 0, tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
-loudness = np.zeros((10, 8, duration), dtype=int)
+loudness = 60*np.ones((10, 8, duration), dtype=int)
 '''
 def get_Perlin_noise():
 	noise_array = np.empty((sequence.shape))
@@ -68,7 +68,7 @@ def render_timeseries_sequence():
 			if time_slice <> -1:
 					current_boxes = get_boxes(notes[i], time_slice) #indices of boxes with a given note and octave value
 					sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
-					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
+					#loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
 					#print "note", notes[i], "octave", time_slice, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
 		#print "time: ", frame			
@@ -181,9 +181,9 @@ def test_power_supply_safety(loudness):
 	for frame in range(duration):
 		for group in range(1, 11): #iterating over all groups
 			group_indices = return_current_power_supply_group_indices(group)
-			if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
+			#if np.sum(loudness[:,:, frame][group_indices]) >= 127*4:
 				#print "clipping", np.where(loudness[:,:, frame] >= 127)[0].shape
-				loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
+				#loudness[:,:, frame][group_indices] = np.clip(loudness[:,:, frame][group_indices], 0, 60) 
 	return loudness			
 
 sequence, loudness = render_timeseries_sequence()
