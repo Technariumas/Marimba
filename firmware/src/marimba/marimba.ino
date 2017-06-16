@@ -99,6 +99,7 @@ void timer_setup() {
 volatile void ( *timer_callback)()= (void *)  NULL;
 volatile uint32_t timer_left=0;
 volatile uint8_t  ada = 0;
+volatile uint8_t delay_damper=0;
 
 
 void set_timer_reg(uint8_t cnt) {
@@ -127,14 +128,17 @@ void set_timer(uint32_t timeout, void ( *_callback)(void)) {
 
 }
 
-ISR(TIMER2_OVF_vect) {
+ISR(TIMER2_OVF_vect,ISR_BLOCK) {
     if ( (timer_left < 2) ) 
     {
         if(ada) {
 
-            TCNT2=1;
-            if(timer_callback) timer_callback();
-            timer_callback=(void *)  NULL;
+            TCNT2&=1;
+            if(timer_callback)
+            { 
+              timer_callback();
+              timer_callback=(void *)  NULL; 
+            }
             ada = 0;
         }
     }
@@ -197,19 +201,27 @@ void setup(){
 
 
 uint8_t myNote = 0;
-
-uint32_t strokeEnd = 0;
 uint32_t strokeHighLength = 12;
 uint32_t strokeMidLength = 60;
 volatile uint8_t strokeInProgress = 0;
-volatile uint8_t wantMidStroke = 0;
+volatile uint8_t shouldDampen=0;
 
 inline static void displayHealth() {
-	if(HEALTH_GOOD == healthStatus || HEALTH_NO_MIDI == healthStatus) {
+/*
+	if(millis() - lastMidiTs > 5000) {
+		healthStatus |= HEALTH_NO_MIDI;
+	} else {
+		healthStatus &= ~HEALTH_NO_MIDI;
+	}
+
+	if(healthStatus & HEALTH_IN_NOTE) {
+		setLed(LED1, 0, 4095, 4095);
+	} else
+    if(HEALTH_GOOD == healthStatus || HEALTH_NO_MIDI == healthStatus) {
 		setLed(LED1, 4095, 3500, 4095);
 		return;
 	}
-
+*/
 	if(healthStatus & HEALTH_NO_MIDI) {
 		setLed(LED2, 4095, 4095, 0);
 	} else if(strokeInProgress){
@@ -217,61 +229,51 @@ inline static void displayHealth() {
     else {
 		setLed(LED2, 4095, 4095, 4095);
 	}
-
-	if(healthStatus & HEALTH_IN_NOTE) {
-		setLed(LED1, 0, 4095, 4095);
-	}
 }
 
-
 void loop() {
-	
     myNote = getDipSwitch();
 	chase();
     MIDI.read();
     MIDI.read();
     MIDI.read();
-	
-    if( !strokeInProgress && ((PINB & _BV(PINB5))==0) )
+    if( !strokeInProgress && delay_damper) {
+        delay_damper=0;
+        startDamper();
+    };
+
+  /* if( !strokeInProgress && ((PINB & _BV(PINB5))==0) )
         {
             handleNoteOn(CHANNEL_SOLENOIDS, myNote, 127);
           // handleNoteOn(CHANNEL_SOLENOIDS, myNote, 127);
        }
-
-/*
-     if( !strokeInProgress && ((PINB & _BV(PINB3))==0 && (millis() >( strokeEnd + 10) ))) 
+ if( !strokeInProgress && ((PINB & _BV(PINB3))==0) ) 
         { 
             handleNoteOn(CHANNEL_SOLENOIDS, myNote, 64);
-        }
-*/
-	
+        } */
 	dampen();
-	if(millis() - lastMidiTs > 5000) {
-		healthStatus |= HEALTH_NO_MIDI;
-	} else {
-		healthStatus &= ~HEALTH_NO_MIDI;
-	}
-
 	displayHealth();
 }
 
 void strokeStop() {
-    strokeInProgress=0;
     OCR1A = 0;
+    strokeInProgress = 0;
     }
 
 void strokeHigh() {
+	strokeInProgress = 1;
+    shouldDampen=1;
     OCR1A = 255; //set PWM to 255
     set_timer(strokeHighLength,strokeStop);
-	strokeInProgress = 1;
 }
 
 void strokeMid() {
 	strokeInProgress = 1;
+    shouldDampen=1;
     OCR1A = 255; //set PWM to 255
     _delay_ms(1);
+    OCR1A = 127; //set PWM to 127
     set_timer(strokeMidLength,strokeStop);
-    OCR1A = 127; //set PWM to 255
 }
 
 #define DAMPEN_IDLE 		0
@@ -330,6 +332,7 @@ void dampen() {
 }
 
 void startDamper() {
+    shouldDampen=0;
 	healthStatus &= ~HEALTH_IN_NOTE;
 	dampenPhase = DAMPEN_ENGAGE;
 	dampenCycleEnd = millis() + dampenCycleLength;
@@ -390,7 +393,8 @@ void handleNoteOn(byte channel, byte pitch, byte velocity) {
 void handleNoteOff(byte channel, byte pitch, byte velocity) {
 	lastMidiTs = millis();
 	if(myNote == pitch && isDamperIdle()) {
-		startDamper();
+    if(strokeInProgress)  delay_damper=1; 
+        else if(shouldDampen) startDamper();
 	}
 }
 

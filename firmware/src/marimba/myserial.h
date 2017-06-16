@@ -60,6 +60,6 @@ class MySerial{
 
 MySerial mySerial;
 
-ISR(USART_RX_vect){
+ISR(USART_RX_vect,ISR_BLOCK){
 	mySerial._rx_complete_irq();
 }
