@@ -24,7 +24,7 @@ midi = Midi(number_tracks=1, channel = 0, tempo=120, instrument=11)
 #testMidi = Midi(number_tracks=1, tempo=120, instrument=11)
 
 sequence = -1*np.ones((10, 8, duration), dtype=int)
-loudness = np.zeros((10, 8, duration), dtype=int)
+loudness = 60*np.ones((10, 8, duration), dtype=int)
 '''
 def get_Perlin_noise():
 	noise_array = np.empty((sequence.shape))
@@ -61,14 +61,14 @@ def render_timeseries_sequence():
 		#timestamps, mb, sessions = check_time_contiguity(timestamps, time_slice_start, time_slice_end, mb, sessions)
 		print len(mb), "mb"
 		timeseries[i,:] = make_threshold(np.rint(mb), notes[i]).astype(int)
-		volumeseries[i,:] = get_volume(sessions)
+		#volumeseries[i,:] = get_volume(sessions)
 		for frame in range(duration):
 			time_slice = timeseries[i, frame]#octave value array sliced in time
 			#for j, octave in enumerate(time_slice): #iterating over 4*4 frames (setting octave values)
 			if time_slice <> -1:
 					current_boxes = get_boxes(notes[i], time_slice) #indices of boxes with a given note and octave value
 					sequence[current_boxes[0], current_boxes[1], frame] = index_array[current_boxes[0], current_boxes[1]] #sequence array elements that are playing at a given time slice are filled with box numbers
-					loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
+					#loudness[current_boxes[0], current_boxes[1], frame] = volumeseries[i,frame]
 					#print "note", notes[i], "octave", time_slice, current_boxes[0], current_boxes[1], "boxes"
 					#print "notes, octaves", i, j
 		#print "time: ", frame			
